@@ -1,0 +1,6 @@
+بعد النشر على Vercel استبدل YOUR-PROJECT باسم مشروعك:
+https://YOUR-PROJECT.vercel.app/api/easyorders/clixy-dhPCjNq2wKWptUY9F7OLfc
+
+EasyOrders Type: Orders
+Description: Clixy Shipping Labels
+Active: ON

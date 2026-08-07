@@ -1,0 +1,12 @@
+{
+  "name": "clixy-easyorders-webhook",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Clixy webhook receiver for EasyOrders and 10x15 shipping-label preview",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "dev": "vercel dev"
+  }
+}
