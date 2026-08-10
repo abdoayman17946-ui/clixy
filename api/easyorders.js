@@ -2,7 +2,7 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   if (req.method === "GET") {
     const id = req.query?.order;
-    if (!id) return res.status(400).json({ok:false,error:"Missing order. Example: /api/easyorders?order=17"});
+    if (!id) return res.status(400).json({ok:false,error:"Missing order. Example: /api/easyorders?order=1"});
     const key = process.env.EASYORDERS_API_KEY;
     if (!key) return res.status(500).json({ok:false,error:"EASYORDERS_API_KEY is not configured"});
     try {
