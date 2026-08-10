@@ -1,0 +1,8 @@
+{
+  "name": "clixy-shipping-system",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  }
+}
