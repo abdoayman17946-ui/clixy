@@ -4,7 +4,7 @@ const esc = v => String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",
 
 export default async function handler(req,res) {
   const id=req.query?.order;
-  if (!id || !/^\d+$/.test(String(id))) return res.status(400).send("اكتب رقم الطلب مثل /api/label?order=17");
+  if (!id || !/^\d+$/.test(String(id))) return res.status(400).send("اكتب رقم الطلب مثل /api/label?order=1");
   const key=process.env.EASYORDERS_API_KEY;
   if(!key) return res.status(500).send("EASYORDERS_API_KEY غير مضبوط");
   try {
