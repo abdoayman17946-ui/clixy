@@ -1,0 +1,8 @@
+{
+  "name": "clixy-shipping-system",
+  "version": "2.0.0",
+  "private": true,
+  "dependencies": {
+    "@vercel/blob": "latest"
+  }
+}
