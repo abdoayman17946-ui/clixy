@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CLIXY — إدارة بوالص الشحن</title>
+<style>
+:root{--gold:#bd8a1d;--ink:#151515;--bg:#f4f5f7;--line:#ddd}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Tahoma",sans-serif;background:var(--bg);color:var(--ink)}
+.top{background:#fff;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:10}.topIn{max-width:1250px;margin:auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:15px}.brand{display:flex;align-items:center;gap:12px}.brand img{width:120px}.brand span{font-weight:700;color:#777;font-size:13px}
+.wrap{max-width:1250px;margin:22px auto;padding:0 18px}.hero{background:#fff;border-radius:18px;padding:20px;box-shadow:0 4px 20px #0000000b}.hero h1{margin:0 0 8px;font-size:24px}.hero p{margin:0;color:#666;font-size:14px}
+.toolbar{margin-top:16px;display:grid;grid-template-columns:1fr auto auto;gap:9px}.input{padding:12px 14px;border:1px solid #ccc;border-radius:10px;font-family:inherit;font-size:14px}.btn{border:0;border-radius:10px;padding:12px 16px;cursor:pointer;font-family:inherit;font-weight:800}.gold{background:var(--gold);color:#fff}.dark{background:#111;color:#fff}.light{background:#eee}.danger{background:#b3261e;color:#fff}
+.hint{font-size:12px;color:#777;margin-top:9px}.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 10px}.bar h2{margin:0;font-size:16px}.tools{display:flex;gap:7px;flex-wrap:wrap}
+.orders{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}.order{background:#fff;border:1px solid #e2e2e2;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:11px}.order.selected{border:2px solid var(--gold);padding:13px}.rowTop{display:flex;align-items:center;justify-content:space-between;gap:10px}.check{width:20px;height:20px;accent-color:var(--gold)}.num{font-size:19px;font-weight:900}.date{font-size:11px;color:#888}.customer{font-weight:700}.meta{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:12px}.meta div{background:#f7f7f7;border-radius:8px;padding:8px}.actions{display:flex;gap:7px}.actions .btn{flex:1;padding:9px}.empty{background:#fff;border:1px dashed #bbb;border-radius:14px;padding:30px;text-align:center;color:#777}
+.status{font-size:11px;padding:5px 8px;border-radius:99px;background:#eee;display:inline-block}.loading{opacity:.6;pointer-events:none}
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:50;align-items:center;justify-content:center}.modal.open{display:flex}.panel{background:#fff;width:min(1250px,94vw);max-height:92vh;overflow:auto;border-radius:18px;padding:16px}.panelHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.panelHead h3{margin:0}.previewArea{display:flex;flex-wrap:wrap;gap:15px;justify-content:center;background:#e9e9e9;padding:15px;border-radius:12px}.previewSheet{width:100mm;height:150mm;background:#fff;flex:none;box-shadow:0 2px 10px #0003;overflow:hidden}
+.printLabel{width:100%;height:100%;padding:3.2mm 3.4mm}.printLabel .inside{width:100%;height:100%;box-sizing:border-box;border:1px solid #111;border-radius:4mm;padding:2.7mm 2.8mm;display:flex;flex-direction:column;overflow:hidden;font-family:Arial,"Tahoma",sans-serif;color:#111}
+.ph{display:grid;grid-template-columns:1.12fr 1fr .72fr;align-items:center;gap:2mm;padding-bottom:2.1mm;border-bottom:1.4px solid var(--gold)}.ph img{width:38mm}.pc{text-align:center}.pc .small{font-size:8.2px;color:var(--gold)}.pc .on{font-size:18mm;line-height:.9;font-weight:900;color:var(--gold);direction:ltr}.qrbox{text-align:center}.qrbox img{width:20mm;height:20mm;border:1px solid var(--gold);border-radius:2.2mm;padding:1mm}.qrurl{font-size:5.6px;direction:ltr;margin-top:.7mm;color:#555}.bc{margin:1.7mm 0 1.5mm;text-align:center}.bcTitle{font-size:7px;margin-bottom:.7mm}.bc svg{width:74mm;height:12mm;display:block;margin:auto}.bcText{font-size:7px;font-weight:800;direction:ltr;letter-spacing:.5px;margin-top:.4mm}
+.inf{border:1px solid #888;border-radius:2.3mm;display:grid;grid-template-columns:1fr 1.45fr 1fr;min-height:30mm;overflow:hidden}.inf>div{padding:1.7mm 2mm;border-left:1px dashed #aaa}.inf>div:last-child{border-left:0}.k{font-size:7px;color:var(--gold);margin-bottom:.8mm}.v{font-size:8.4px;font-weight:700;line-height:1.35}.ltr{direction:ltr;text-align:right;font-size:8.3px;font-weight:700;margin-top:.8mm}.locationBox{margin-top:1.2mm;border-top:1px dashed #bbb;padding-top:1mm}.locationQr{width:13mm;height:13mm;display:block;margin:1mm auto 0;border:1px solid #bbb;padding:.6mm;border-radius:1.5mm}.locationText{font-size:6.5px;font-weight:700;word-break:break-all;direction:ltr;text-align:center;margin-top:.5mm}.pt{margin-top:1.8mm;background:var(--gold);color:#fff;text-align:center;border-radius:2mm 2mm 0 0;padding:1.1mm;font-size:8.2px;font-weight:800}.ptb{width:100%;border-collapse:collapse;table-layout:fixed;font-size:7px}.ptb th,.ptb td{border:1px solid #999;padding:1.1mm;text-align:center;vertical-align:middle}.ptb th:nth-child(1){width:44%}.ptb th:nth-child(2){width:14%}.ptb th:nth-child(3){width:18%}.ptb th:nth-child(4){width:24%}.ptb td:first-child{text-align:right;font-weight:700}.variant{font-size:5.6px;font-weight:400;color:#555;margin-top:.5mm}.mg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5mm;margin-top:1.7mm}.mb{border:1px solid #999;border-radius:2mm;text-align:center;padding:1.5mm}.mb .n{font-size:9.2px;font-weight:900;margin-top:.7mm}.cod{margin-top:1.7mm;border:1.2px solid var(--gold);border-radius:2.2mm;padding:1.7mm;text-align:center}.cod .cl{font-size:7px;font-weight:800}.cod .cv{font-size:15px;font-weight:900;color:var(--gold);margin-top:.5mm}.dep{font-size:6.5px;color:#555}.ft{display:grid;grid-template-columns:1fr 1fr;gap:1.5mm;margin-top:1.7mm}.fb{border:1px solid #aaa;border-radius:2mm;padding:1.6mm;text-align:center;min-height:15mm}.fb .v{font-size:7.1px;margin-top:.8mm}.note{margin-top:1.7mm;border:1px solid #aaa;border-radius:2mm;padding:1.7mm;font-size:6.7px;min-height:10mm}.note b{color:var(--gold);font-size:7px}
+.toast{position:fixed;bottom:20px;left:20px;background:#111;color:#fff;padding:11px 15px;border-radius:10px;display:none;z-index:100}.toast.show{display:block}
+
+/* Compact layouts for orders with many products: keep the 10x15cm label fixed and keep the footer visible. */
+.previewSheet.dense1 .ptb{font-size:6.4px}.previewSheet.dense1 .ptb th,.previewSheet.dense1 .ptb td{padding:.75mm}.previewSheet.dense1 .variant{font-size:5.1px}.previewSheet.dense1 .mg{margin-top:1.1mm}.previewSheet.dense1 .cod{margin-top:1.1mm}.previewSheet.dense1 .ft{margin-top:1.1mm}.previewSheet.dense1 .fb{min-height:12mm;padding:1.2mm}.previewSheet.dense1 .note{min-height:8mm}
+.previewSheet.dense2 .ph{padding-bottom:1.4mm}.previewSheet.dense2 .ph img{width:34mm}.previewSheet.dense2 .qrbox img{width:17mm;height:17mm}.previewSheet.dense2 .bc{margin:1mm 0}.previewSheet.dense2 .bc svg{height:9mm}.previewSheet.dense2 .bcText{font-size:6px}.previewSheet.dense2 .inf{min-height:26mm}.previewSheet.dense2 .locationQr{width:10mm;height:10mm}.previewSheet.dense2 .pt{margin-top:1mm;padding:.8mm;font-size:7.3px}.previewSheet.dense2 .ptb{font-size:5.8px}.previewSheet.dense2 .ptb th,.previewSheet.dense2 .ptb td{padding:.5mm}.previewSheet.dense2 .variant{font-size:4.6px;margin-top:.2mm}.previewSheet.dense2 .mg{margin-top:.9mm}.previewSheet.dense2 .mb{padding:1mm}.previewSheet.dense2 .mb .n{font-size:8px}.previewSheet.dense2 .cod{margin-top:.9mm;padding:1.2mm}.previewSheet.dense2 .cod .cv{font-size:13px}.previewSheet.dense2 .ft{margin-top:.9mm}.previewSheet.dense2 .fb{min-height:10mm;padding:1mm}.previewSheet.dense2 .fb .v{font-size:6.4px}.previewSheet.dense2 .note{min-height:7mm;padding:1mm;font-size:6px}
+.previewSheet.dense3 .ph{padding-bottom:1mm}.previewSheet.dense3 .ph img{width:31mm}.previewSheet.dense3 .qrbox img{width:15mm;height:15mm}.previewSheet.dense3 .pc .on{font-size:15mm}.previewSheet.dense3 .bc{margin:.7mm 0}.previewSheet.dense3 .bc svg{height:7mm}.previewSheet.dense3 .bcText{font-size:5.5px}.previewSheet.dense3 .inf{min-height:22mm}.previewSheet.dense3 .inf>div{padding:1mm 1.4mm}.previewSheet.dense3 .k{font-size:6px;margin-bottom:.4mm}.previewSheet.dense3 .v,.previewSheet.dense3 .ltr{font-size:7px}.previewSheet.dense3 .locationBox{margin-top:.6mm;padding-top:.5mm}.previewSheet.dense3 .locationQr{width:8mm;height:8mm;margin:.5mm auto 0}.previewSheet.dense3 .locationText{font-size:5px}.previewSheet.dense3 .pt{margin-top:.7mm;padding:.55mm;font-size:6.7px}.previewSheet.dense3 .ptb{font-size:5.2px}.previewSheet.dense3 .ptb th,.previewSheet.dense3 .ptb td{padding:.32mm}.previewSheet.dense3 .variant{font-size:4.1px;margin-top:0}.previewSheet.dense3 .mg{margin-top:.6mm;gap:1mm}.previewSheet.dense3 .mb{padding:.7mm}.previewSheet.dense3 .mb .n{font-size:7px;margin-top:.3mm}.previewSheet.dense3 .cod{margin-top:.6mm;padding:.8mm}.previewSheet.dense3 .cod .cl{font-size:6px}.previewSheet.dense3 .cod .cv{font-size:11px}.previewSheet.dense3 .dep{font-size:5.5px}.previewSheet.dense3 .ft{margin-top:.6mm;gap:1mm}.previewSheet.dense3 .fb{min-height:8mm;padding:.7mm}.previewSheet.dense3 .fb .v{font-size:5.6px;margin-top:.3mm}.previewSheet.dense3 .note{min-height:6mm;margin-top:.6mm;padding:.7mm;font-size:5.4px}.previewSheet.dense3 .note b{font-size:6px}
+.previewSheet.dense4 .ph img{width:29mm}.previewSheet.dense4 .qrbox img{width:13mm;height:13mm}.previewSheet.dense4 .pc .on{font-size:13mm}.previewSheet.dense4 .bc svg{height:6mm}.previewSheet.dense4 .inf{min-height:19mm}.previewSheet.dense4 .locationQr{width:7mm;height:7mm}.previewSheet.dense4 .ptb{font-size:4.7px}.previewSheet.dense4 .ptb th,.previewSheet.dense4 .ptb td{padding:.22mm}.previewSheet.dense4 .variant{font-size:3.7px}.previewSheet.dense4 .mg,.previewSheet.dense4 .cod,.previewSheet.dense4 .ft,.previewSheet.dense4 .note{margin-top:.45mm}.previewSheet.dense4 .mb{padding:.5mm}.previewSheet.dense4 .mb .n{font-size:6.3px}.previewSheet.dense4 .cod{padding:.6mm}.previewSheet.dense4 .cod .cv{font-size:10px}.previewSheet.dense4 .fb{min-height:7mm;padding:.5mm}.previewSheet.dense4 .fb .v{font-size:5.1px}.previewSheet.dense4 .note{min-height:5mm;padding:.5mm;font-size:5px}
+@media(max-width:750px){.toolbar{grid-template-columns:1fr}.topIn{flex-direction:column;align-items:flex-start}.orders{grid-template-columns:1fr}}
+@media print{
+  @page{size:100mm 150mm;margin:0}
+  body{background:#fff}
+  .top,.wrap,.toast{display:none!important}
+  .modal{display:block!important;position:static!important;inset:auto!important;background:#fff!important}
+  .panel{width:100%!important;max-height:none!important;overflow:visible!important;padding:0!important;border-radius:0!important}
+  .panelHead{display:none!important}
+  .previewArea{padding:0;background:#fff;display:block}
+  .previewSheet{width:100mm;height:150mm;box-shadow:none;margin:0;page-break-after:always;break-after:page}
+  .previewSheet:last-child{page-break-after:auto;break-after:auto}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="topIn"><div class="brand"><img src="/assets/clixy-logo.png" alt="CLIXY"><span>إدارة وطباعة بوالص الشحن</span></div><button class="btn light" onclick="loadSaved()">↻ تحديث الطلبات</button></div></header>
+<main class="wrap"><section class="hero"><h1>بوالص CLIXY</h1><p>اختار أكثر من طلب، راجع البوالص، وعدّل البيانات من صفحة البوليصة قبل الطباعة.</p>
+<div class="toolbar"><input class="input" id="ids" placeholder="أرقام الطلبات: 26,27,28 أو 26 27 28"><button class="btn gold" onclick="addIds()">إضافة الطلبات</button><button class="btn dark" onclick="previewSelected()">معاينة المحدد</button></div>
+<div class="hint">لو الطلب موجود تلقائيًا من الـ Webhook سيظهر هنا. ويمكنك أيضًا إضافة أي رقم طلب يدويًا.</div></section>
+<div class="bar"><h2>الطلبات <span id="count"></span></h2><div class="tools"><button class="btn light" onclick="selectAll(true)">تحديد الكل</button><button class="btn light" onclick="selectAll(false)">إلغاء التحديد</button><button class="btn dark" onclick="printSelected()">🖨️ طباعة المحدد</button></div></div>
+<section id="orders" class="orders"></section></main>
+<div class="modal" id="previewModal"><div class="panel"><div class="panelHead"><h3>معاينة البوالص قبل الطباعة</h3><div class="tools"><button class="btn dark" onclick="window.print()">🖨️ طباعة الآن</button><button class="btn light" onclick="closePreview()">إغلاق</button></div></div><div id="previewArea" class="previewArea"></div></div></div>
+<div id="toast" class="toast"></div>
+<script>
+const state={orders:new Map(),selected:new Set(),loading:false};
+const STORAGE_ORDERS="clixy_dashboard_orders";
+function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2500)}
+function keyFor(id){return "clixy_label_"+id}
+function getOverride(id){try{return JSON.parse(localStorage.getItem(keyFor(id))||"null")}catch(e){return null}}
+function mergeOrder(o){const id=String(o.short_id||o.id||o.order||"");if(!id)return null;const override=getOverride(id);return override?{...o,...override,items:Array.isArray(override.items)?override.items:(o.cart_items||[])}:o}
+function orderItems(o){if(Array.isArray(o.items))return o.items.map(x=>({name:x.name||x.product?.name||"منتج",variant:x.variant||((x.variant?.variation_props||[]).map(v=>v.variation+": "+v.variation_prop).join(" / ")),quantity:Number(x.quantity||1),price:Number(x.price||0)}));return (o.cart_items||[]).map(x=>({name:x.product?.name||x.name||"منتج",variant:(x.variant?.variation_props||[]).map(v=>v.variation+": "+v.variation_prop).join(" / "),quantity:Number(x.quantity||1),price:Number(x.price||0)}))}
+function totalOf(o){return Number(o.total??o.total_cost??0)||0}
+function shippingOf(o){return Number(o.shipping??o.shipping_cost??0)||0}
+function customerOf(o){return o.full_name||o.name||"بدون اسم"}
+function renderList(){
+ const el=document.getElementById("orders");document.getElementById("count").textContent="("+state.orders.size+")";
+ if(!state.orders.size){el.innerHTML='<div class="empty">لا توجد طلبات ظاهرة حاليًا.<br>أضف أرقام الطلبات من الخانة بالأعلى أو تأكد من اتصال Vercel Blob بالـ Webhook.</div>';return}
+ el.innerHTML=[...state.orders.values()].map(o=>{const id=String(o.short_id||o.id||o.order);const sel=state.selected.has(id);return `<article class="order ${sel?"selected":""}">
+ <div class="rowTop"><label><input class="check" type="checkbox" ${sel?"checked":""} onchange="toggle('${esc(id)}',this.checked)"></label><div class="num">#${esc(id)}</div><div class="date">${esc(o.status||"")}</div></div>
+ <div class="customer">${esc(customerOf(o))}</div>
+ <div class="meta"><div>📞 ${esc(o.phone||"-")}</div><div>💰 ${totalOf(o).toFixed(2)} ج.م</div></div>
+ <div class="actions"><button class="btn light" onclick="openLabel('${esc(id)}')">✏️ تعديل</button><button class="btn dark" onclick="singlePreview('${esc(id)}')">👁 معاينة</button></div>
+ </article>`}).join("");
+}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function toggle(id,on){on?state.selected.add(id):state.selected.delete(id);renderList()}
+function selectAll(on){[...state.orders.keys()].forEach(id=>on?state.selected.add(id):state.selected.delete(id));renderList()}
+async function addIds(){
+ const raw=document.getElementById("ids").value.trim();if(!raw)return;
+ const ids=[...new Set(raw.split(/[,\s،]+/).map(x=>x.trim()).filter(Boolean))];
+ await loadIds(ids);document.getElementById("ids").value="";
+}
+async function loadIds(ids){
+ if(!ids.length)return; state.loading=true;document.body.classList.add("loading");
+ try{
+   for(let i=0;i<ids.length;i+=40){
+     const batch=ids.slice(i,i+40);
+     const r=await fetch("/api/easyorders?orders="+encodeURIComponent(batch.join(",")));
+     const data=await r.json();
+     const arr=data.results||[data];
+     for(const x of arr){if(x.ok&&x.data){const o=x.data;const id=String(o.short_id||x.order);state.orders.set(id,o);state.selected.add(id)}else toast("تعذر تحميل الطلب #"+(x.order||""))}
+   }
+   persistIds();renderList();
+ }catch(e){toast("حصل خطأ أثناء تحميل الطلبات")}finally{state.loading=false;document.body.classList.remove("loading")}
+}
+async function loadSaved(){
+ try{
+  const r=await fetch("/api/orders");const d=await r.json();
+  const ids=(d.orders||[]).map(x=>String(x.id));
+  if(ids.length) await loadIds(ids.slice(0,100)); else {const saved=JSON.parse(localStorage.getItem(STORAGE_ORDERS)||"[]");if(saved.length)await loadIds(saved)}
+ }catch(e){const saved=JSON.parse(localStorage.getItem(STORAGE_ORDERS)||"[]");if(saved.length)await loadIds(saved);else renderList()}
+}
+function persistIds(){localStorage.setItem(STORAGE_ORDERS,JSON.stringify([...state.orders.keys()].slice(0,200)))}
+function openLabel(id){window.open("/api/label?order="+encodeURIComponent(id),"_blank","noopener")}
+function printSelected(){if(!state.selected.size){toast("حدد طلبًا واحدًا على الأقل");return}previewSelected(true)}
+async function waitForPrintReady(root){
+  const imgs=[...root.querySelectorAll("img")];
+  await Promise.all(imgs.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.addEventListener("load",resolve,{once:true});img.addEventListener("error",resolve,{once:true})})));
+  if(document.fonts&&document.fonts.ready) try{await document.fonts.ready}catch(e){}
+}
+function singlePreview(id){state.selected=new Set([id]);renderList();previewSelected()}
+async function previewSelected(autoPrint=false){
+ const ids=[...state.selected];if(!ids.length){toast("حدد طلبًا واحدًا على الأقل");return}
+ const area=document.getElementById("previewArea");area.innerHTML='<div style="padding:25px">جاري تجهيز المعاينة...</div>';document.getElementById("previewModal").classList.add("open");
+ const fresh=[];
+ for(const id of ids){const existing=state.orders.get(id);fresh.push(mergeOrder(existing||{}))}
+ area.innerHTML=fresh.map(renderLabel).join("");
+ if(autoPrint){await waitForPrintReady(area);requestAnimationFrame(()=>setTimeout(()=>window.print(),200));}
+}
+function closePreview(){document.getElementById("previewModal").classList.remove("open")}
+function renderLabel(o){
+ const id=String(o.short_id||o.id||o.order);const items=orderItems(o);const denseClass=items.length>=20?"dense4":items.length>=15?"dense3":items.length>=10?"dense2":items.length>=7?"dense1":"";const shipping=shippingOf(o);const subtotal=items.reduce((s,x)=>s+x.price*x.quantity,0);const total=totalOf(o)||subtotal+shipping;const dep=Math.max(0,Number(o.deposit)||0);const cod=Math.max(0,total-dep);const phone2=o.phone2||"";const location=o.location||"";const address=o.address||[o.government,o.city,o.address].filter(Boolean).join(" - ")||"-";const barcode=`CLX-${new Date().getFullYear()}-${id.padStart(6,"0")}`;
+ return `<div class="previewSheet ${denseClass}"><div class="printLabel"><div class="inside">
+ <div class="ph"><div><img src="/assets/clixy-logo.png"></div><div class="pc"><div class="small">رقم البوليصة</div><div class="on"><span style="font-size:15px">#</span>${esc(id)}</div></div><div class="qrbox"><img src="/assets/clixy-qr.png"></div></div>
+ <div class="bc">${barcodeSvg(barcode)}<div class="bcText">${esc(barcode)}</div></div>
+ <div class="inf"><div><div class="k">اسم العميل</div><div class="v">${esc(customerOf(o))}</div><div class="k" style="margin-top:1.7mm">رقم الهاتف الأساسي</div><div class="ltr">${esc(o.phone||"-")}</div><div class="k" style="margin-top:1.7mm">رقم إضافي (اختياري)</div><div class="ltr">${esc(phone2||"-")}</div></div><div><div class="k">العنوان</div><div class="v">${esc(address)}</div><div class="locationBox"><div class="k">اللوكيشن</div>${o.location?`<img class="locationQr" src="${locationQrUrl(o.location)}" alt="Location QR"><div class="locationText">افتح اللوكيشن</div>`:`<div class="locationText">-</div>`}</div></div><div><div class="k">ملاحظات</div><div class="v">${esc(o.notes||"-")}</div></div></div>
+ <div class="pt">المنتجات</div><table class="ptb"><thead><tr><th>المنتج</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${items.map(x=>`<tr><td>${esc(x.name)}${x.variant?`<div class="variant">${esc(x.variant)}</div>`:""}</td><td>${x.quantity}</td><td>${x.price.toFixed(2)}</td><td>${(x.price*x.quantity).toFixed(2)}</td></tr>`).join("")}</tbody></table>
+ <div class="mg"><div class="mb"><div class="k">إجمالي المنتجات</div><div class="n">${subtotal.toFixed(2)} ج.م</div></div><div class="mb"><div class="k">الشحن</div><div class="n">${shipping.toFixed(2)} ج.م</div></div><div class="mb"><div class="k">إجمالي الطلب</div><div class="n">${total.toFixed(2)} ج.م</div></div></div>
+ <div class="cod"><div class="cl">${dep>=total&&total>0?"مدفوع بالكامل":"المبلغ المطلوب تحصيله (COD)"}</div><div class="cv">${cod.toFixed(2)} ج.م</div><div class="dep">${dep>0?"تم دفع مقدم: "+dep.toFixed(2)+" ج.م":"بدون دفعة مقدمة"}</div></div>
+ <div class="ft"><div class="fb"><div class="k">ملاحظات الطلب</div><div class="v">شكراً لشرائك من CLIXY ❤️</div></div><div class="fb"><div class="k">خدمة العملاء</div><div class="v">01033674242</div></div></div>
+ </div></div></div>`;
+}
+function locationQrUrl(value){return "https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=6&data="+encodeURIComponent(String(value||""));}
+function barcodeSvg(text){
+ const p=["212222","222122","222221","121223","121322","131222","122213","122312","132212","221213","221312","231212","112232","122132","122231","113222","123122","123221","223211","221132","221231","213212","223112","312131","311222","321122","321221","312212","322112","322211","212123","212321","232121","111323","131123","131321","112313","132113","132311","211313","231113","231311","112133","112331","132131","113123","113321","133121","313121","211331","231131","213113","223112","213131","311123","311321","331121","312113","312311","332111","314111","221411","431111","111224","111422","121124","121421","141122","141221","112214","112412","122114","122411","142112","142211","241211","221114","413111","241112","134111","111242","121142","121241","114212","124112","124211","411212","421112","421211","212141","214121","412121","111143","111341","131141","114113","114311","411113","411311","113141","114131","311141","411131","211412","211214","211232","2331112"];const s=String(text).replace(/[^\x20-\x7E]/g,"");const v=[104];for(let i=0;i<s.length;i++)v.push(s.charCodeAt(i)-32);let c=104;for(let i=1;i<v.length;i++)c+=v[i]*i;v.push(c%103,106);let x=10,r="";for(const n of v){let black=true;for(const ch of p[n]){const w=+ch;if(black)r+=`<rect x="${x}" y="0" width="${w}" height="62"/>`;x+=w;black=!black}}return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${x+10} 62"><rect width="100%" height="100%" fill="#fff"/>${r}</svg>`;
+}
+renderList();loadSaved();
+</script>
+</body></html>
