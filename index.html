@@ -69,6 +69,9 @@
   .previewSheet{width:100mm;height:150mm;box-shadow:none;margin:0;page-break-after:always;break-after:page}
   .previewSheet:last-child{page-break-after:auto;break-after:auto}
 }
+
+/* Professional dashboard edit dialog */
+.editPanel{background:#fff;width:min(820px,95vw);max-height:92vh;overflow:auto;border-radius:22px;box-shadow:0 25px 80px rgba(0,0,0,.25);padding:0;color:#151515}.editHero{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;padding:24px 26px 18px;background:linear-gradient(135deg,#fffaf0,#fff);border-bottom:1px solid #eee}.editHero h3{margin:3px 0 5px;font-size:22px}.editHero p{margin:0;color:#777;font-size:12px}.editEyebrow{font-size:10px;font-weight:800;color:var(--gold);letter-spacing:.4px}.iconClose{width:38px;height:38px;border:0;border-radius:50%;background:#f1f1f1;font-size:24px;cursor:pointer}.editSection{padding:17px 26px;border-bottom:1px solid #eee}.sectionTitle{font-weight:900;font-size:13px;margin-bottom:10px}.editCard{background:#fafafa;border:1px solid #e7e7e7;border-radius:13px;padding:11px}.editCard.full{margin-top:10px}.editCard label{display:block;font-size:11px;font-weight:800;margin-bottom:6px}.editCard input,.editCard textarea{width:100%;border:1px solid #d7d7d7;background:#fff;border-radius:9px;padding:10px;font:inherit;outline:none}.editCard input:focus,.editCard textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(189,138,29,.1)}.editCard small{display:block;color:#999;font-size:9px;margin-top:5px}.calculated{background:#fffdf7}.calculated input{font-weight:900}.codCard input{color:#a97808}.editFooter{display:flex;justify-content:flex-end;gap:10px;padding:16px 26px;background:#fff;position:sticky;bottom:0}.saveMain{min-width:170px}@media(max-width:650px){.editSection{padding:14px}.editHero{padding:18px}.editFooter{padding:14px}.editCard{grid-column:1/-1}.editPanel .row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -79,15 +82,24 @@
 <div class="bar"><h2>الطلبات <span id="count"></span></h2><div class="tools"><button class="btn light" onclick="selectAll(true)">تحديد الكل</button><button class="btn light" onclick="selectAll(false)">إلغاء التحديد</button><button class="btn dark" onclick="printSelected()">🖨️ طباعة المحدد</button></div></div>
 <section id="orders" class="orders"></section></main>
 <div class="modal" id="previewModal"><div class="panel"><div class="panelHead"><h3>معاينة البوالص قبل الطباعة</h3><div class="tools"><button class="btn dark" onclick="window.print()">🖨️ طباعة الآن</button><button class="btn light" onclick="closePreview()">إغلاق</button></div></div><div id="previewArea" class="previewArea"></div></div></div>
-<div class="modal" id="editModal"><div class="panel" style="width:min(760px,94vw)"><div class="panelHead"><h3 id="editTitle">تعديل البوليصة</h3><button class="btn light" onclick="closeDashboardEdit()">إغلاق</button></div>
-<div class="row"><div class="field"><label>الديبوزيت المدفوع</label><input id="dDeposit" type="number" min="0" step=".01"></div><div class="field"><label>الشحن</label><input id="dShipping" type="number" min="0" step=".01"></div></div>
-<div class="row"><div class="field"><label>إجمالي الطلب</label><input id="dTotal" type="number" min="0" step=".01" readonly></div><div class="field"><label>المبلغ المطلوب تحصيله (COD)</label><input id="dCod" type="number" min="0" step=".01" readonly></div></div>
-<div class="row"><div class="field"><label>اسم العميل</label><input id="dName"></div><div class="field"><label>رقم إضافي</label><input id="dPhone2"></div></div>
-<div class="field"><label>العنوان</label><textarea id="dAddress" rows="2"></textarea></div>
-<div class="field"><label>لوكيشن العميل</label><input id="dLocation" placeholder="رابط Google Maps"></div>
-<div class="field"><label>ملاحظات</label><textarea id="dNotes" rows="2"></textarea></div>
-<div class="field"><label>وصف المنتج</label><textarea id="dProductDescription" rows="3" placeholder="اكتب وصف المنتج ليظهر في المساحة المخصصة بجوار QR المنتجات"></textarea></div>
-<div class="buttons"><button class="btn dark" onclick="saveDashboardEdit()">حفظ التعديلات</button><button class="btn light" onclick="closeDashboardEdit()">إلغاء</button></div></div></div>
+<div class="modal" id="editModal"><div class="editPanel">
+  <div class="editHero"><div><div class="editEyebrow">CLIXY • إدارة البوليصة</div><h3 id="editTitle">تعديل البوليصة</h3><p>عدّل بيانات العميل والشحن والوصف ثم احفظ التعديلات.</p></div><button class="iconClose" onclick="closeDashboardEdit()">×</button></div>
+  <div class="editSection"><div class="sectionTitle">💰 المبالغ</div><div class="row">
+    <div class="editCard"><label>الديبوزيت المدفوع</label><input id="dDeposit" type="number" min="0" step=".01"><small>المبلغ المدفوع مقدمًا</small></div>
+    <div class="editCard"><label>الشحن</label><input id="dShipping" type="number" min="0" step=".01"><small>غيّر الشحن وسيُحدّث الإجمالي تلقائيًا</small></div>
+    <div class="editCard calculated"><label>إجمالي الطلب</label><input id="dTotal" type="number" min="0" step=".01" readonly><small>إجمالي المنتجات + الشحن</small></div>
+    <div class="editCard calculated codCard"><label>المبلغ المطلوب تحصيله (COD)</label><input id="dCod" type="number" min="0" step=".01" readonly><small>الإجمالي − الديبوزيت</small></div>
+  </div></div>
+  <div class="editSection"><div class="sectionTitle">👤 بيانات العميل</div><div class="row">
+    <div class="editCard"><label>اسم العميل</label><input id="dName"></div>
+    <div class="editCard"><label>رقم إضافي</label><input id="dPhone2"></div>
+  </div>
+  <div class="editCard full"><label>العنوان</label><textarea id="dAddress" rows="2"></textarea></div>
+  <div class="editCard full"><label>لوكيشن العميل</label><input id="dLocation" placeholder="رابط Google Maps"></div></div>
+  <div class="editSection"><div class="sectionTitle">📦 تفاصيل المنتج</div><div class="editCard full"><label>وصف المنتج</label><textarea id="dProductDescription" rows="3" placeholder="اكتب وصف المنتج ليظهر يمين QR المنتجات على البوليصة"></textarea></div></div>
+  <div class="editSection"><div class="sectionTitle">📝 الملاحظات</div><div class="editCard full"><label>ملاحظات الطلب</label><textarea id="dNotes" rows="2"></textarea></div></div>
+  <div class="editFooter"><button class="btn dark saveMain" onclick="saveDashboardEdit()">✓ حفظ التعديلات</button><button class="btn light" onclick="closeDashboardEdit()">إلغاء</button></div>
+</div></div>
 <div id="toast" class="toast"></div>
 <script>
 const state={orders:new Map(),selected:new Set(),loading:false};
@@ -95,7 +107,7 @@ const STORAGE_ORDERS="clixy_dashboard_orders";
 function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2500)}
 function keyFor(id){return "clixy_label_v2_"+id}
 function getOverride(id){try{return JSON.parse(localStorage.getItem(keyFor(id))||"null")}catch(e){return null}}
-function mergeOrder(o){const id=String(o.short_id||o.id||o.order||"");if(!id)return null;const override=getOverride(id);return override?{...o,...override,items:Array.isArray(override.items)?override.items:(o.cart_items||[])}:o}
+function mergeOrder(o){const id=String(o.short_id||o.id||o.order||"");if(!id)return null;const override=getOverride(id);if(!override)return o;const sourceItems=Array.isArray(o.items)&&o.items.length?o.items:(Array.isArray(o.cart_items)?o.cart_items:[]);const savedItems=Array.isArray(override.items)&&override.items.length?override.items:sourceItems;return {...o,...override,items:savedItems,cart_items:Array.isArray(o.cart_items)?o.cart_items:savedItems};}
 function orderItems(o){if(Array.isArray(o.items))return o.items.map(x=>({name:x.name||x.product?.name||"منتج",variant:x.variant||((x.variant?.variation_props||[]).map(v=>v.variation+": "+v.variation_prop).join(" / ")),quantity:Number(x.quantity||1),price:Number(x.price||0)}));return (o.cart_items||[]).map(x=>({name:x.product?.name||x.name||"منتج",variant:(x.variant?.variation_props||[]).map(v=>v.variation+": "+v.variation_prop).join(" / "),quantity:Number(x.quantity||1),price:Number(x.price||0)}))}
 function totalOf(o){return Number(o.total??o.total_cost??0)||0}
 function shippingOf(o){return Number(o.shipping??o.shipping_cost??0)||0}
@@ -147,23 +159,23 @@ const editEls={
  modal:document.getElementById("editModal"),title:document.getElementById("editTitle"),deposit:document.getElementById("dDeposit"),shipping:document.getElementById("dShipping"),total:document.getElementById("dTotal"),cod:document.getElementById("dCod"),name:document.getElementById("dName"),phone2:document.getElementById("dPhone2"),address:document.getElementById("dAddress"),location:document.getElementById("dLocation"),notes:document.getElementById("dNotes"),description:document.getElementById("dProductDescription")
 };
 function dashboardEditData(id){const raw=state.orders.get(String(id))||{};return mergeOrder(raw);}
+function financialBase(o){const sourceTotal=Number(o.total??o.total_cost??0)||0;const sourceShipping=Number(o.shipping??o.shipping_cost??0)||0;const itemSum=(Array.isArray(o.items)?o.items:[]).reduce((s,x)=>s+(Number(x.price)||0)*(Number(x.quantity)||0),0);const subtotal=sourceTotal>0?Math.max(0,sourceTotal-sourceShipping):itemSum;return {subtotal,sourceTotal,sourceShipping};}
 function updateDashboardTotals(){
- const items=Array.isArray(dashboardEditData(editingId).items)?dashboardEditData(editingId).items:[];
- const subtotal=items.reduce((s,x)=>s+(Number(x.price)||0)*(Number(x.quantity)||0),0);
+ const d=dashboardEditData(editingId);
+ const base=financialBase(d);
  const shipping=Math.max(0,Number(editEls.shipping.value)||0);
- const total=subtotal+shipping;
+ const total=base.subtotal+shipping;
  const dep=Math.max(0,Number(editEls.deposit.value)||0);
  editEls.total.value=total.toFixed(2); editEls.cod.value=Math.max(0,total-dep).toFixed(2);
 }
 function openDashboardEdit(id){
  editingId=String(id);
  const d=dashboardEditData(editingId);
- const items=Array.isArray(d.items)?d.items:[];
- const subtotal=items.reduce((s,x)=>s+(Number(x.price)||0)*(Number(x.quantity)||0),0);
+ const base=financialBase(d);
  editEls.title.textContent="تعديل البوليصة #"+editingId;
  editEls.deposit.value=Number(d.deposit||0);
- editEls.shipping.value=Number(d.shipping||d.shipping_cost||0);
- editEls.total.value=(subtotal+Number(editEls.shipping.value||0)).toFixed(2);
+ editEls.shipping.value=Number(d.shipping??d.shipping_cost??0);
+ editEls.total.value=(base.subtotal+Number(editEls.shipping.value||0)).toFixed(2);
  editEls.name.value=d.full_name||d.name||""; editEls.phone2.value=d.phone2||""; editEls.address.value=d.address||""; editEls.location.value=d.location||""; editEls.notes.value=d.notes||""; editEls.description.value=d.product_description||"";
  updateDashboardTotals();
  editEls.modal.classList.add("open");
@@ -171,8 +183,8 @@ function openDashboardEdit(id){
 function closeDashboardEdit(){editEls.modal.classList.remove("open");editingId=null}
 function saveDashboardEdit(){
  if(!editingId)return;
- const base=dashboardEditData(editingId); const items=Array.isArray(base.items)?base.items:[];
- const subtotal=items.reduce((s,x)=>s+(Number(x.price)||0)*(Number(x.quantity)||0),0);
+ const base=dashboardEditData(editingId); const baseFinancial=financialBase(base); const items=Array.isArray(base.items)&&base.items.length?base.items:(Array.isArray(base.cart_items)?base.cart_items:[]);
+ const subtotal=baseFinancial.subtotal;
  const shipping=Math.max(0,Number(editEls.shipping.value)||0); const total=subtotal+shipping; const deposit=Math.max(0,Number(editEls.deposit.value)||0);
  const override={...base,deposit,shipping,total,cod:Math.max(0,total-deposit),codManual:false,full_name:editEls.name.value.trim(),phone2:editEls.phone2.value.trim(),address:editEls.address.value.trim(),location:editEls.location.value.trim(),notes:editEls.notes.value.trim(),product_description:editEls.description.value.trim(),items};
  localStorage.setItem(keyFor(editingId),JSON.stringify(override)); state.orders.set(editingId,{...state.orders.get(editingId),...override,items}); renderList(); closeDashboardEdit(); singlePreview(editingId); toast("تم حفظ التعديلات");
@@ -196,7 +208,7 @@ async function previewSelected(autoPrint=false){
 }
 function closePreview(){document.getElementById("previewModal").classList.remove("open")}
 function renderLabel(o){
- const id=String(o.short_id||o.id||o.order);const items=orderItems(o);const denseClass=items.length>=70?"dense10":items.length>=60?"dense9":items.length>=50?"dense8":items.length>=40?"dense7":items.length>=35?"dense6":items.length>=25?"dense5":items.length>=20?"dense4":items.length>=15?"dense3":items.length>=10?"dense2":items.length>=7?"dense1":"";const shipping=shippingOf(o);const subtotal=items.reduce((s,x)=>s+x.price*x.quantity,0);const total=totalOf(o)||subtotal+shipping;const dep=Math.max(0,Number(o.deposit)||0);const cod=Math.max(0,total-dep);const phone2=o.phone2||"";const location=o.location||"";const address=o.address||[o.government,o.city,o.address].filter(Boolean).join(" - ")||"-";const barcode=`CLX-${new Date().getFullYear()}-${id.padStart(6,"0")}`;
+ const id=String(o.short_id||o.id||o.order);const items=orderItems(o);const denseClass=items.length>=70?"dense10":items.length>=60?"dense9":items.length>=50?"dense8":items.length>=40?"dense7":items.length>=35?"dense6":items.length>=25?"dense5":items.length>=20?"dense4":items.length>=15?"dense3":items.length>=10?"dense2":items.length>=7?"dense1":"";const shipping=shippingOf(o);const sourceTotal=totalOf(o);const subtotal=sourceTotal>0?Math.max(0,sourceTotal-shipping):items.reduce((s,x)=>s+x.price*x.quantity,0);const total=subtotal+shipping;const dep=Math.max(0,Number(o.deposit)||0);const cod=Math.max(0,total-dep);const phone2=o.phone2||"";const location=o.location||"";const address=o.address||[o.government,o.city,o.address].filter(Boolean).join(" - ")||"-";const barcode=`CLX-${new Date().getFullYear()}-${id.padStart(6,"0")}`;
  return `<div class="previewSheet ${denseClass}"><div class="printLabel"><div class="inside">
  <div class="ph"><div><img src="/assets/clixy-logo.png"></div><div class="pc"><div class="small">رقم البوليصة</div><div class="on"><span style="font-size:15px">#</span>${esc(id)}</div></div><div class="qrbox"><img src="/assets/clixy-qr.png"></div></div>
  <div class="bc">${barcodeSvg(barcode)}<div class="bcText">${esc(barcode)}</div></div>

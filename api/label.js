@@ -32,12 +32,14 @@ function code128Svg(text) {
 }
 
 function parseBodyData(o) {
-  const items = Array.isArray(o.cart_items) ? o.cart_items : [];
-  return items.map(x => ({
-    name: x.product?.name || x.name || "منتج",
-    variant: (x.variant?.variation_props || []).map(v => `${v.variation || ""}: ${v.variation_prop || ""}`).filter(Boolean).join(" / "),
-    quantity: Number(x.quantity || 1),
-    price: Number(x.price || 0)
+  const source = Array.isArray(o.items) && o.items.length ? o.items : (Array.isArray(o.cart_items) ? o.cart_items : []);
+  return source.map(x => ({
+    name: x.product?.name || x.name || x.product_name || "منتج",
+    variant: x.variant?.variation_props
+      ? x.variant.variation_props.map(v => `${v.variation || ""}: ${v.variation_prop || ""}`).filter(Boolean).join(" / ")
+      : (typeof x.variant === "string" ? x.variant : ""),
+    quantity: Number(x.quantity || x.qty || 1),
+    price: Number(x.price ?? x.unit_price ?? 0)
   }));
 }
 
@@ -57,9 +59,11 @@ export default async function handler(req, res) {
 
     const o = result.data || result;
     const items = parseBodyData(o);
-    const shipping = Number(o.shipping_cost || 0);
-    const rawTotal = Number(o.total_cost || 0);
-    const productSubtotal = items.reduce((sum, x) => sum + x.price * x.quantity, 0) || Math.max(0, rawTotal - shipping);
+    const shipping = Number(o.shipping_cost ?? o.shipping ?? 0) || 0;
+    const rawTotal = Number(o.total_cost ?? o.total ?? 0) || 0;
+    // EasyOrders total_cost is the order total including shipping. Keep that value as the source of truth.
+    const itemSum = items.reduce((sum, x) => sum + x.price * x.quantity, 0);
+    const productSubtotal = rawTotal > 0 ? Math.max(0, rawTotal - shipping) : itemSum;
     const orderNo = String(o.short_id || id);
     const barcodeValue = `CLX-${new Date().getFullYear()}-${orderNo.padStart(6, "0")}`;
     const qr = await QRCode.toDataURL(FIXED_QR_URL, { margin: 1, width: 220 });
@@ -93,7 +97,7 @@ export default async function handler(req, res) {
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{font-family:Arial,"Tahoma",sans-serif;background:#eee;color:#111}
-.sheet{width:100mm;height:150mm;margin:0 auto;background:#fff;position:relative;overflow:hidden;padding:3.2mm 3.4mm}
+.sheet{width:100mm;height:150mm;margin:64px auto 18px;background:#fff;position:relative;overflow:hidden;padding:3.2mm 3.4mm}
 .label{width:100%;height:100%;border:1px solid #111;border-radius:4mm;padding:2.7mm 2.8mm;display:flex;flex-direction:column}
 .gold{color:#b98212}.goldbg{background:#bd8a1d}
 .header{display:grid;grid-template-columns:1.12fr 1fr .72fr;align-items:center;gap:2mm;padding-bottom:2.1mm;border-bottom:1.4px solid #bd8a1d}
@@ -103,9 +107,8 @@ body{font-family:Arial,"Tahoma",sans-serif;background:#eee;color:#111}
 .productsTitle{margin-top:1.8mm;background:#bd8a1d;color:#fff;text-align:center;border-radius:2mm 2mm 0 0;padding:1.1mm;font-size:8.2px;font-weight:800}.products{width:100%;border-collapse:collapse;table-layout:fixed;font-size:7px}.products th,.products td{border:1px solid #999;padding:1.1mm;text-align:center;vertical-align:middle}.products th{font-size:6.8px;background:#fafafa}.products th:nth-child(1){width:44%}.products th:nth-child(2){width:14%}.products th:nth-child(3){width:18%}.products th:nth-child(4){width:24%}.products td:first-child{text-align:right;font-weight:700}.variant{font-size:5.6px;font-weight:400;color:#555;margin-top:.5mm}
 .moneyGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5mm;margin-top:1.7mm}.moneyBox{border:1px solid #999;border-radius:2mm;text-align:center;padding:1.5mm}.moneyBox .k{font-size:6.5px;color:#555}.moneyBox .n{font-size:9.2px;font-weight:900;margin-top:.7mm}.cod{margin-top:1.7mm;border:1.2px solid #bd8a1d;border-radius:2.2mm;padding:1.7mm;text-align:center}.codLabel{font-size:7px;font-weight:800}.codValue{font-size:15px;font-weight:900;color:#bd8a1d;margin-top:.5mm}.deposit{font-size:6.5px;color:#555}
 .footer{display:grid;grid-template-columns:1fr 1fr;gap:1.5mm;margin-top:1.7mm}.footerBox{border:1px solid #aaa;border-radius:2mm;padding:1.6mm;text-align:center;min-height:15mm}.footerBox .k{font-size:6.2px;color:#bd8a1d}.footerBox .v{font-size:7.1px;font-weight:700;line-height:1.35;margin-top:.8mm}.note{margin-top:1.7mm;border:1px solid #aaa;border-radius:2mm;padding:1.7mm;font-size:6.7px;min-height:10mm}.note b{color:#bd8a1d;font-size:7px}
-.actions{position:fixed;left:12px;top:12px;z-index:50;display:flex;gap:7px}.actions button{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-family:inherit;font-weight:700}.edit{background:#bd8a1d;color:#fff}.print{background:#111;color:#fff}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center}.modal.open{display:flex}.panel{background:#fff;width:min(720px,94vw);max-height:92vh;overflow:auto;padding:18px;border-radius:16px}.panel h3{margin:0 0 14px}.field{margin:9px 0}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:4px}.field input,.field textarea{width:100%;padding:9px;border:1px solid #bbb;border-radius:8px;font-family:inherit}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.productsEdit{width:100%;border-collapse:collapse;font-size:11px}.productQrPanel{display:flex;direction:ltr;align-items:center;justify-content:space-between;gap:5mm;border:1px solid #aaa;border-radius:2mm;padding:2mm;min-height:24mm}.productQr{width:15.5mm;height:15.5mm;object-fit:contain;border:1px solid #bbb;padding:.5mm;border-radius:1.5mm;transform:translateY(-1.2mm)}.productDescBox{flex:1;text-align:right;direction:rtl;min-width:0}.productDesc{font-size:7.2px;line-height:1.35;white-space:pre-wrap;word-break:break-word;max-height:17mm;overflow:hidden}
-.productsEdit th,.productsEdit td{border:1px solid #ddd;padding:5px}.productsEdit input{width:100%;padding:6px;border:1px solid #ccc;border-radius:6px}.panel .buttons{display:flex;gap:8px;margin-top:14px}.panel button{padding:10px 15px;border:0;border-radius:8px;cursor:pointer}.save{background:#111;color:#fff}.cancel{background:#ddd}
+.actions{position:fixed;left:16px;top:14px;z-index:200;display:flex;gap:8px;direction:ltr;background:rgba(255,255,255,.92);padding:5px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);backdrop-filter:blur(8px)}.actions button{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-family:inherit;font-weight:700}.edit{background:#bd8a1d;color:#fff}.print{background:#111;color:#fff}
+.modal{display:none;position:fixed;inset:0;background:rgba(20,20,20,.62);z-index:300;align-items:center;justify-content:center;padding:16px}.modal.open{display:flex}.panel{background:#fff;width:min(760px,96vw);max-height:92vh;overflow:auto;border-radius:22px;box-shadow:0 28px 90px rgba(0,0,0,.28);padding:0}.editHead{display:flex;justify-content:space-between;align-items:flex-start;padding:22px 24px 16px;background:linear-gradient(135deg,#fff9ec,#fff);border-bottom:1px solid #eee}.editHead h3{margin:2px 0 5px;font-size:20px}.editHead p{margin:0;color:#777;font-size:11px}.editClose{width:36px;height:36px;border:0;border-radius:50%;background:#f0f0f0;font-size:22px;cursor:pointer}.editBody{padding:18px 24px}.editGroup{border:1px solid #eee;border-radius:15px;padding:13px;margin-bottom:12px;background:#fff}.editGroupTitle{font-weight:900;font-size:12px;margin-bottom:10px;color:#333}.field{margin:8px 0}.field label{display:block;font-size:11px;font-weight:800;margin-bottom:5px}.field input,.field textarea{width:100%;padding:10px;border:1px solid #d2d2d2;border-radius:9px;font-family:inherit;outline:none}.field input:focus,.field textarea:focus{border-color:#bd8a1d;box-shadow:0 0 0 3px rgba(189,138,29,.1)}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.calc input{background:#fffaf0;font-weight:900;color:#9a6d08}.productsEdit{width:100%;border-collapse:collapse;font-size:11px}.productQrPanel{display:flex;direction:ltr;align-items:center;justify-content:space-between;gap:5mm;border:1px solid #aaa;border-radius:2mm;padding:2mm;min-height:24mm}.productQr{width:15.5mm;height:15.5mm;object-fit:contain;border:1px solid #bbb;padding:.5mm;border-radius:1.5mm;transform:translateY(-1.2mm)}.productDescBox{flex:1;text-align:right;direction:rtl;min-width:0}.productDesc{font-size:7.2px;line-height:1.35;white-space:pre-wrap;word-break:break-word;max-height:17mm;overflow:hidden}.productsEdit th,.productsEdit td{border:1px solid #ddd;padding:5px}.productsEdit input{width:100%;padding:6px;border:1px solid #ccc;border-radius:6px}.panel .buttons{display:flex;gap:8px;justify-content:flex-end;padding:14px 24px;border-top:1px solid #eee;position:sticky;bottom:0;background:#fff}.panel button{padding:10px 15px;border:0;border-radius:9px;cursor:pointer;font-weight:800}.save{background:#111;color:#fff}.cancel{background:#e9e9e9}@media(max-width:600px){.row{grid-template-columns:1fr}.editBody{padding:14px}.editHead{padding:18px}.panel .buttons{padding:12px 14px}}
 @media print{body{background:#fff}.actions,.modal{display:none!important}.sheet{margin:0}.label{break-inside:avoid}}
 </style></head><body>
 <div class="actions"><button class="edit" onclick="openEdit()">✏️ تعديل البيانات</button><button class="print" onclick="window.print()">🖨️ طباعة</button></div>
@@ -123,16 +126,12 @@ body{font-family:Arial,"Tahoma",sans-serif;background:#eee;color:#111}
 <div class="cod"><div class="codLabel" id="paymentLabel">المبلغ المطلوب تحصيله (COD)</div><div class="codValue" id="cod"></div><div class="deposit" id="depositText"></div></div>
 <div class="footer"><div class="footerBox"><div class="k">ملاحظات الطلب</div><div class="v">شكراً لشرائك من CLIXY ❤️</div></div><div class="footerBox"><div class="k">خدمة العملاء</div><div class="v">01033674242</div></div></div>
 </section></div>
-<div class="modal" id="modal"><div class="panel"><h3>تعديل البوليصة #${esc(orderNo)}</h3>
-<div class="row"><div class="field"><label>الديبوزيت المدفوع</label><input id="eDeposit" type="number" min="0" step=".01"></div><div class="field"><label>إجمالي الطلب</label><input id="eTotal" type="number" min="0" step=".01"></div></div>
-<div class="row"><div class="field"><label>المبلغ المطلوب تحصيله (يُحسب تلقائيًا)</label><input id="eCod" type="number" min="0" step=".01" readonly></div><div class="field"><label>الشحن</label><input id="eShipping" type="number" min="0" step=".01"></div></div>
-<div class="row"><div class="field"><label>اسم العميل</label><input id="eName"></div><div class="field"><label>رقم إضافي</label><input id="ePhone2"></div></div>
-<div class="field"><label>العنوان</label><textarea id="eAddress" rows="2"></textarea></div>
-<div class="field"><label>لوكيشن العميل (رابط Google Maps أو أي رابط موقع)</label><input id="eLocation" placeholder="الصق رابط اللوكيشن هنا"></div>
-<div class="field"><label>ملاحظات</label><textarea id="eNotes" rows="2"></textarea></div>
-<div class="field"><label>وصف المنتج</label><textarea id="eProductDescription" rows="3" placeholder="اكتب وصف المنتج الذي تريد ظهوره على الفاتورة"></textarea></div>
-<div class="buttons"><button class="save" onclick="saveEdit()">حفظ التعديلات</button><button class="cancel" onclick="closeEdit()">إلغاء</button></div>
-</div></div>
+<div class="modal" id="modal"><div class="panel"><div class="editHead"><div><div style="font-size:10px;color:#bd8a1d;font-weight:900">CLIXY • إدارة البوليصة</div><h3>تعديل البوليصة #${esc(orderNo)}</h3><p>عدّل البيانات ثم احفظها قبل الطباعة.</p></div><button class="editClose" onclick="closeEdit()">×</button></div><div class="editBody">
+<div class="editGroup"><div class="editGroupTitle">💰 المبالغ</div><div class="row"><div class="field"><label>الديبوزيت المدفوع</label><input id="eDeposit" type="number" min="0" step=".01"></div><div class="field"><label>الشحن</label><input id="eShipping" type="number" min="0" step=".01"></div></div><div class="row"><div class="field calc"><label>إجمالي الطلب</label><input id="eTotal" type="number" min="0" step=".01" readonly></div><div class="field calc"><label>المبلغ المطلوب تحصيله (COD)</label><input id="eCod" type="number" min="0" step=".01" readonly></div></div></div>
+<div class="editGroup"><div class="editGroupTitle">👤 بيانات العميل</div><div class="row"><div class="field"><label>اسم العميل</label><input id="eName"></div><div class="field"><label>رقم إضافي</label><input id="ePhone2"></div></div><div class="field"><label>العنوان</label><textarea id="eAddress" rows="2"></textarea></div><div class="field"><label>لوكيشن العميل</label><input id="eLocation" placeholder="الصق رابط Google Maps هنا"></div></div>
+<div class="editGroup"><div class="editGroupTitle">📦 المنتج</div><div class="field"><label>وصف المنتج</label><textarea id="eProductDescription" rows="3" placeholder="اكتب وصف المنتج الذي تريد ظهوره يمين QR المنتجات"></textarea></div></div>
+<div class="editGroup"><div class="editGroupTitle">📝 الملاحظات</div><div class="field"><label>ملاحظات الطلب</label><textarea id="eNotes" rows="2"></textarea></div></div></div>
+<div class="buttons"><button class="save" onclick="saveEdit()">✓ حفظ التعديلات</button><button class="cancel" onclick="closeEdit()">إلغاء</button></div></div></div>
 <script>
 const ORDER_KEY="clixy_label_v2_${esc(orderNo)}";
 const BASE=${initialJson};
@@ -151,6 +150,12 @@ function getData(){
   try { return {...BASE, ...(JSON.parse(localStorage.getItem(ORDER_KEY)||"{}"))}; }
   catch(e){ return {...BASE}; }
 }
+function financialBase(d){
+  const sourceTotal=Number(d.total??d.total_cost??0)||0;
+  const sourceShipping=Number(d.shipping??d.shipping_cost??0)||0;
+  const itemSum=(Array.isArray(d.items)?d.items:[]).reduce((s,x)=>s+(Number(x.price)||0)*(Number(x.quantity)||0),0);
+  return {subtotal:sourceTotal>0?Math.max(0,sourceTotal-sourceShipping):itemSum,shipping:sourceShipping};
+}
 function updateCodField(){
   const total=Math.max(0, Number(els.eTotal.value)||0);
   const dep=Math.max(0, Number(els.eDeposit.value)||0);
@@ -158,10 +163,11 @@ function updateCodField(){
 }
 function render(){
   const d=getData();
-  const items=Array.isArray(d.items)?d.items:[];
-  const subtotal=items.reduce((s,x)=>s+(Number(x.price)||0)*(Number(x.quantity)||0),0);
-  const shipping=Math.max(0,Number(d.shipping)||0);
-  const total=Math.max(0,Number.isFinite(Number(d.total)) ? Number(d.total) : subtotal+shipping);
+  const items=Array.isArray(d.items)&&d.items.length?d.items:(Array.isArray(d.cart_items)?d.cart_items:[]);
+  const fb=financialBase({...d,items});
+  const subtotal=fb.subtotal;
+  const shipping=Math.max(0,Number(d.shipping??d.shipping_cost??0)||0);
+  const total=subtotal+shipping;
   const dep=Math.max(0,Number(d.deposit)||0);
   const cod=Math.max(0,total-dep);
 
@@ -199,12 +205,12 @@ function render(){
 }
 function openEdit(){
   const d=getData();
-  const items=Array.isArray(d.items)?d.items:[];
-  const subtotal=items.reduce((sum,x)=>sum+(Number(x.price)||0)*(Number(x.quantity)||0),0);
+  const items=Array.isArray(d.items)&&d.items.length?d.items:(Array.isArray(d.cart_items)?d.cart_items:[]);
+  const fb=financialBase({...d,items});
 
   els.eDeposit.value=Number(d.deposit||0);
-  els.eShipping.value=Number(d.shipping||0);
-  els.eTotal.value=(subtotal+Math.max(0,Number(d.shipping)||0)).toFixed(2);
+  els.eShipping.value=Number(d.shipping??d.shipping_cost??0);
+  els.eTotal.value=(fb.subtotal+Math.max(0,Number(els.eShipping.value)||0)).toFixed(2);
   els.eName.value=d.full_name||"";
   els.ePhone2.value=d.phone2||"";
   els.eAddress.value=d.address||"";
@@ -218,11 +224,12 @@ function closeEdit(){els.modal.classList.remove("open");}
 function saveEdit(){
   try{
     const d=getData();
-    const items=Array.isArray(d.items)?d.items:[];
-    const subtotal=items.reduce((sum,x)=>sum+(Number(x.price)||0)*(Number(x.quantity)||0),0);
+    const items=Array.isArray(d.items)&&d.items.length?d.items:(Array.isArray(d.cart_items)?d.cart_items:[]);
+    const fb=financialBase({...d,items});
+    const subtotal=fb.subtotal;
     d.deposit=Math.max(0,Number(els.eDeposit.value)||0);
     d.shipping=Math.max(0,Number(els.eShipping.value)||0);
-    // إجمالي الطلب = إجمالي المنتجات + الشحن
+    // إجمالي الطلب = إجمالي المنتجات الأصلي + الشحن الجديد.
     d.total=Math.max(0,subtotal+d.shipping);
     d.cod=Math.max(0,d.total-d.deposit);
     d.codManual=false;
@@ -245,9 +252,9 @@ els.eDeposit.addEventListener("input",updateCodField);
 els.eTotal.addEventListener("input",updateCodField);
 els.eShipping.addEventListener("input",()=>{
   const d=getData();
-  const items=Array.isArray(d.items)?d.items:[];
-  const subtotal=items.reduce((sum,x)=>sum+(Number(x.price)||0)*(Number(x.quantity)||0),0);
-  els.eTotal.value=(subtotal+Math.max(0,Number(els.eShipping.value)||0)).toFixed(2);
+  const items=Array.isArray(d.items)&&d.items.length?d.items:(Array.isArray(d.cart_items)?d.cart_items:[]);
+  const fb=financialBase({...d,items});
+  els.eTotal.value=(fb.subtotal+Math.max(0,Number(els.eShipping.value)||0)).toFixed(2);
   updateCodField();
 });
 // إغلاق نافذة التعديل عند الضغط خارجها
