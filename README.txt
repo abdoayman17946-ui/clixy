@@ -28,3 +28,11 @@ EasyOrders webhook type: Orders.
 
 ## Important
 Vercel Blob should remain connected to the project. The dashboard uses Blob to discover the saved order-label records. If Blob is unavailable, manual order-number loading still works.
+
+
+V5.7 Product QR update:
+- Added Product Description field in edit modal.
+- Replaced product table on the 10x15 label with a compact QR containing the product description.
+- Falls back to encoding the original product names/variants/quantities when description is empty.
+- Location QR has no caption text.
+- Header logo is forced left and main QR right.
