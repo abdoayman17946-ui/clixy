@@ -133,7 +133,7 @@ async function loadSaved(){
  }catch(e){const saved=JSON.parse(localStorage.getItem(STORAGE_ORDERS)||"[]");if(saved.length)await loadIds(saved);else renderList()}
 }
 function persistIds(){localStorage.setItem(STORAGE_ORDERS,JSON.stringify([...state.orders.keys()].slice(0,200)))}
-function openLabel(id){window.open("/api/label?order="+encodeURIComponent(id),"_blank","noopener")}
+function openLabel(id){window.open("/api/label?order="+encodeURIComponent(id)+"&edit=1","_blank","noopener")}
 function printSelected(){if(!state.selected.size){toast("حدد طلبًا واحدًا على الأقل");return}previewSelected(true)}
 async function waitForPrintReady(root){
   const imgs=[...root.querySelectorAll("img")];
