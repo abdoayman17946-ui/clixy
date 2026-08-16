@@ -104,7 +104,7 @@ body{font-family:Arial,"Tahoma",sans-serif;background:#eee;color:#111}
 .moneyGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5mm;margin-top:1.7mm}.moneyBox{border:1px solid #999;border-radius:2mm;text-align:center;padding:1.5mm}.moneyBox .k{font-size:6.5px;color:#555}.moneyBox .n{font-size:9.2px;font-weight:900;margin-top:.7mm}.cod{margin-top:1.7mm;border:1.2px solid #bd8a1d;border-radius:2.2mm;padding:1.7mm;text-align:center}.codLabel{font-size:7px;font-weight:800}.codValue{font-size:15px;font-weight:900;color:#bd8a1d;margin-top:.5mm}.deposit{font-size:6.5px;color:#555}
 .footer{display:grid;grid-template-columns:1fr 1fr;gap:1.5mm;margin-top:1.7mm}.footerBox{border:1px solid #aaa;border-radius:2mm;padding:1.6mm;text-align:center;min-height:15mm}.footerBox .k{font-size:6.2px;color:#bd8a1d}.footerBox .v{font-size:7.1px;font-weight:700;line-height:1.35;margin-top:.8mm}.note{margin-top:1.7mm;border:1px solid #aaa;border-radius:2mm;padding:1.7mm;font-size:6.7px;min-height:10mm}.note b{color:#bd8a1d;font-size:7px}
 .actions{position:fixed;left:12px;top:12px;z-index:50;display:flex;gap:7px}.actions button{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-family:inherit;font-weight:700}.edit{background:#bd8a1d;color:#fff}.print{background:#111;color:#fff}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center}.modal.open{display:flex}.panel{background:#fff;width:min(720px,94vw);max-height:92vh;overflow:auto;padding:18px;border-radius:16px}.panel h3{margin:0 0 14px}.field{margin:9px 0}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:4px}.field input,.field textarea{width:100%;padding:9px;border:1px solid #bbb;border-radius:8px;font-family:inherit}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.productsEdit{width:100%;border-collapse:collapse;font-size:11px}.productQrPanel{display:flex;align-items:center;justify-content:center;gap:5mm;border:1px solid #aaa;border-radius:2mm;padding:2mm;min-height:24mm}.productQr{width:17mm;height:17mm;object-fit:contain;border:1px solid #bbb;padding:.5mm;border-radius:1.5mm}.productDescBox{flex:1;text-align:right;direction:rtl;min-width:0}.productDesc{font-size:7.2px;line-height:1.35;white-space:pre-wrap;word-break:break-word;max-height:17mm;overflow:hidden}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center}.modal.open{display:flex}.panel{background:#fff;width:min(720px,94vw);max-height:92vh;overflow:auto;padding:18px;border-radius:16px}.panel h3{margin:0 0 14px}.field{margin:9px 0}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:4px}.field input,.field textarea{width:100%;padding:9px;border:1px solid #bbb;border-radius:8px;font-family:inherit}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.productsEdit{width:100%;border-collapse:collapse;font-size:11px}.productQrPanel{display:flex;align-items:center;justify-content:center;gap:5mm;border:1px solid #aaa;border-radius:2mm;padding:2mm;min-height:24mm}.productQr{width:15.5mm;height:15.5mm;object-fit:contain;border:1px solid #bbb;padding:.5mm;border-radius:1.5mm;transform:translateY(-1.2mm)}.productDescBox{flex:1;text-align:right;direction:rtl;min-width:0}.productDesc{font-size:7.2px;line-height:1.35;white-space:pre-wrap;word-break:break-word;max-height:17mm;overflow:hidden}
 .productsEdit th,.productsEdit td{border:1px solid #ddd;padding:5px}.productsEdit input{width:100%;padding:6px;border:1px solid #ccc;border-radius:6px}.panel .buttons{display:flex;gap:8px;margin-top:14px}.panel button{padding:10px 15px;border:0;border-radius:8px;cursor:pointer}.save{background:#111;color:#fff}.cancel{background:#ddd}
 @media print{body{background:#fff}.actions,.modal{display:none!important}.sheet{margin:0}.label{break-inside:avoid}}
 </style></head><body>
@@ -134,92 +134,123 @@ body{font-family:Arial,"Tahoma",sans-serif;background:#eee;color:#111}
 <div class="buttons"><button class="save" onclick="saveEdit()">حفظ التعديلات</button><button class="cancel" onclick="closeEdit()">إلغاء</button></div>
 </div></div>
 <script>
-const ORDER_KEY="clixy_label_${esc(orderNo)}";
+const ORDER_KEY="clixy_label_v2_${esc(orderNo)}";
 const BASE=${initialJson};
-function getData(){try{return {...BASE,...JSON.parse(localStorage.getItem(ORDER_KEY)||"{}")}}catch(e){return {...BASE}}}
+const $ = id => document.getElementById(id);
+const els = {
+  modal: $("modal"),
+  eDeposit: $("eDeposit"), eTotal: $("eTotal"), eCod: $("eCod"), eShipping: $("eShipping"),
+  eName: $("eName"), ePhone2: $("ePhone2"), eAddress: $("eAddress"), eLocation: $("eLocation"),
+  eNotes: $("eNotes"), eProductDescription: $("eProductDescription"),
+  fullName: $("fullName"), phone: $("phone"), phone2: $("phone2"), address: $("address"),
+  locationQr: $("locationQr"), locationText: $("locationText"), miniNotes: $("miniNotes"),
+  subtotal: $("subtotal"), shipping: $("shipping"), total: $("total"), cod: $("cod"),
+  depositText: $("depositText"), paymentLabel: $("paymentLabel"), productQr: $("productQr"), productDescription: $("productDescription")
+};
+function getData(){
+  try { return {...BASE, ...(JSON.parse(localStorage.getItem(ORDER_KEY)||"{}"))}; }
+  catch(e){ return {...BASE}; }
+}
+function updateCodField(){
+  const total=Math.max(0, Number(els.eTotal.value)||0);
+  const dep=Math.max(0, Number(els.eDeposit.value)||0);
+  els.eCod.value=Math.max(0,total-dep).toFixed(2);
+}
 function render(){
   const d=getData();
   const items=Array.isArray(d.items)?d.items:[];
   const subtotal=items.reduce((s,x)=>s+(Number(x.price)||0)*(Number(x.quantity)||0),0);
-  const shipping=Number(d.shipping)||0;
-  const total=Number(d.total)>=0?Number(d.total):subtotal+shipping;
+  const shipping=Math.max(0,Number(d.shipping)||0);
+  const total=Math.max(0,Number.isFinite(Number(d.total)) ? Number(d.total) : subtotal+shipping);
   const dep=Math.max(0,Number(d.deposit)||0);
   const cod=Math.max(0,total-dep);
-  document.getElementById("fullName").textContent=d.full_name||"-";
-  document.getElementById("phone").textContent=d.phone||"-";
-  document.getElementById("phone2").textContent=d.phone2||"-";
-  document.getElementById("address").textContent=d.address||"-";
+
+  els.fullName.textContent=d.full_name||"-";
+  els.phone.textContent=d.phone||"-";
+  els.phone2.textContent=d.phone2||"-";
+  els.address.textContent=d.address||"-";
+
   const loc=String(d.location||"").trim();
-  const lq=document.getElementById("locationQr"); const lt=document.getElementById("locationText");
-  if(loc){lq.src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&margin=3&data="+encodeURIComponent(loc);lq.style.display="block";lt.textContent="";}else{lq.removeAttribute("src");lq.style.display="none";lt.textContent="";}
-  document.getElementById("miniNotes").textContent=d.notes||"-";
-  document.getElementById("subtotal").textContent=subtotal.toFixed(2)+" ج.م";
-  document.getElementById("shipping").textContent=shipping.toFixed(2)+" ج.م";
-  document.getElementById("total").textContent=total.toFixed(2)+" ج.م";
-  document.getElementById("cod").textContent=cod.toFixed(2)+" ج.م";
-  document.getElementById("depositText").textContent=dep>0?"تم دفع مقدم: "+dep.toFixed(2)+" ج.م": "بدون دفعة مقدمة";
-  document.getElementById("paymentLabel").textContent=dep>=total&&total>0?"مدفوع بالكامل":"المبلغ المطلوب تحصيله (COD)";
+  if(loc){
+    els.locationQr.src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&margin=3&data="+encodeURIComponent(loc);
+    els.locationQr.style.display="block";
+    els.locationText.textContent="";
+  }else{
+    els.locationQr.removeAttribute("src");
+    els.locationQr.style.display="none";
+    els.locationText.textContent="";
+  }
+
+  els.miniNotes.textContent=d.notes||"-";
+  els.subtotal.textContent=subtotal.toFixed(2)+" ج.م";
+  els.shipping.textContent=shipping.toFixed(2)+" ج.م";
+  els.total.textContent=total.toFixed(2)+" ج.م";
+  els.cod.textContent=cod.toFixed(2)+" ج.م";
+  els.depositText.textContent=dep>0?"تم دفع مقدم: "+dep.toFixed(2)+" ج.م":"بدون دفعة مقدمة";
+  els.paymentLabel.textContent=dep>=total&&total>0?"مدفوع بالكامل":"المبلغ المطلوب تحصيله (COD)";
+
+  // QR المنتجات = المنتجات فقط، والوصف يبقى نصًا منفصلًا.
   const productText=items.map(x=>{
     const v=x.variant?" | "+x.variant:"";
     return (x.name||"منتج")+v+" | الكمية: "+Number(x.quantity||1);
   }).join("\n") || "لا توجد منتجات";
-  const productQr=document.getElementById("productQr");
-  productQr.src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&margin=3&data="+encodeURIComponent(productText);
-  document.getElementById("productDescription").textContent=d.product_description||"";
+  els.productQr.src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&margin=3&data="+encodeURIComponent(productText);
+  els.productDescription.textContent=d.product_description||"";
 }
-function escClient(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function openEdit(){
- const d=getData();
- const subtotal=(d.items||[]).reduce((sum,x)=>sum+(Number(x.price)||0)*(Number(x.quantity)||0),0);
- eDeposit.value=d.deposit||0;eShipping.value=Number(d.shipping||0);eTotal.value=(subtotal+Number(d.shipping||0)).toFixed(2);updateCodField();
- eName.value=d.full_name||"";ePhone2.value=d.phone2||"";eAddress.value=d.address||"";eLocation.value=d.location||"";eNotes.value=d.notes||"";eProductDescription.value=d.product_description||"";
- modal.classList.add("open");
-}
-function updateCodField(){
- const total=Math.max(0,Number(eTotal.value)||0);
- const dep=Math.max(0,Number(eDeposit.value)||0);
- eCod.value=Math.max(0,total-dep).toFixed(2);
-}
-function closeEdit(){modal.classList.remove("open")}
-eDeposit.addEventListener("input",updateCodField);
-eTotal.addEventListener("input",updateCodField);
-eShipping.addEventListener("input",()=>{
- const d=getData();
- const subtotal=(d.items||[]).reduce((sum,x)=>sum+(Number(x.price)||0)*(Number(x.quantity)||0),0);
- eTotal.value=(subtotal+Math.max(0,Number(eShipping.value)||0)).toFixed(2);
- updateCodField();
-});
-function saveEdit(){
- try {
   const d=getData();
-  d.deposit=Math.max(0,Number(document.getElementById("eDeposit").value)||0);
-  d.shipping=Math.max(0,Number(document.getElementById("eShipping").value)||0);
-  const subtotal=(d.items||[]).reduce((sum,x)=>sum+(Number(x.price)||0)*(Number(x.quantity)||0),0);
-  d.total=Math.max(0,subtotal+d.shipping);
-  d.full_name=document.getElementById("eName").value.trim();
-  d.phone2=document.getElementById("ePhone2").value.trim();
-  d.address=document.getElementById("eAddress").value.trim();
-  d.location=document.getElementById("eLocation").value.trim();
-  d.notes=document.getElementById("eNotes").value.trim();
-  d.product_description=document.getElementById("eProductDescription").value.trim();
-  d.cod=Math.max(0,d.total-d.deposit);
-  d.codManual=false;
-  d.items=(d.items||[]).map((x,i)=>{
-    const get=f=>document.querySelector('#editRows [data-i="'+i+'"][data-f="'+f+'"]');
-    if(!get("name")) return null;
-    return {...x,name:get("name").value.trim(),variant:get("variant").value.trim(),quantity:Math.max(1,Number(get("quantity").value)||1),price:Math.max(0,Number(get("price").value)||0)};
-  }).filter(x=>x && x.name);
-  localStorage.setItem(ORDER_KEY,JSON.stringify(d));
-  render();
-  closeEdit();
- } catch(e) {
-  alert("حصل خطأ أثناء حفظ التعديلات. حاول مرة أخرى.");
-  console.error(e);
- }
+  const items=Array.isArray(d.items)?d.items:[];
+  const subtotal=items.reduce((sum,x)=>sum+(Number(x.price)||0)*(Number(x.quantity)||0),0);
+
+  els.eDeposit.value=Number(d.deposit||0);
+  els.eShipping.value=Number(d.shipping||0);
+  els.eTotal.value=(subtotal+Math.max(0,Number(d.shipping)||0)).toFixed(2);
+  els.eName.value=d.full_name||"";
+  els.ePhone2.value=d.phone2||"";
+  els.eAddress.value=d.address||"";
+  els.eLocation.value=d.location||"";
+  els.eNotes.value=d.notes||"";
+  els.eProductDescription.value=d.product_description||"";
+  updateCodField();
+  els.modal.classList.add("open");
 }
-render();
-</script></body></html>`);
-  } catch(e) {
-    return res.status(500).json({ok:false,error:"Label generation failed",details:e?.message});
+function closeEdit(){els.modal.classList.remove("open");}
+function saveEdit(){
+  try{
+    const d=getData();
+    const items=Array.isArray(d.items)?d.items:[];
+    const subtotal=items.reduce((sum,x)=>sum+(Number(x.price)||0)*(Number(x.quantity)||0),0);
+    d.deposit=Math.max(0,Number(els.eDeposit.value)||0);
+    d.shipping=Math.max(0,Number(els.eShipping.value)||0);
+    // إجمالي الطلب = إجمالي المنتجات + الشحن
+    d.total=Math.max(0,subtotal+d.shipping);
+    d.cod=Math.max(0,d.total-d.deposit);
+    d.codManual=false;
+    d.full_name=els.eName.value.trim();
+    d.phone2=els.ePhone2.value.trim();
+    d.address=els.eAddress.value.trim();
+    d.location=els.eLocation.value.trim();
+    d.notes=els.eNotes.value.trim();
+    d.product_description=els.eProductDescription.value.trim();
+    // لا نحذف أو نعدل items هنا؛ الـQR يجب أن يظل مبنيًا على المنتجات الأصلية.
+    localStorage.setItem(ORDER_KEY,JSON.stringify(d));
+    render();
+    closeEdit();
+  }catch(e){
+    console.error(e);
+    alert("حصل خطأ أثناء حفظ التعديلات. حاول مرة أخرى.");
   }
 }
+els.eDeposit.addEventListener("input",updateCodField);
+els.eTotal.addEventListener("input",updateCodField);
+els.eShipping.addEventListener("input",()=>{
+  const d=getData();
+  const items=Array.isArray(d.items)?d.items:[];
+  const subtotal=items.reduce((sum,x)=>sum+(Number(x.price)||0)*(Number(x.quantity)||0),0);
+  els.eTotal.value=(subtotal+Math.max(0,Number(els.eShipping.value)||0)).toFixed(2);
+  updateCodField();
+});
+// إغلاق نافذة التعديل عند الضغط خارجها
+els.modal.addEventListener("click",e=>{if(e.target===els.modal)closeEdit();});
+render();
+</script></body></html>
