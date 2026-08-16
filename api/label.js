@@ -75,7 +75,8 @@ export default async function handler(req, res) {
       notes: o.notes || "",
       shipping,
       total: rawTotal,
-      items
+      items,
+      productDescription: ""
     };
     const initialJson = JSON.stringify(initial).replace(/</g, "\\u003c");
     const rows = items.map((x, i) => `
@@ -98,10 +99,11 @@ body{font-family:Arial,"Tahoma",sans-serif;background:#eee;color:#111}
 .header{display:grid;grid-template-columns:1.12fr 1fr .72fr;align-items:center;gap:2mm;padding-bottom:2.1mm;border-bottom:1.4px solid #bd8a1d}
 .logo{width:38mm;height:auto;display:block}.headCenter{text-align:center}.headCenter .small{font-size:8.2px;color:#b98212;margin-bottom:1mm}.orderNo{font-size:18mm;line-height:.9;font-weight:900;color:#b98212;direction:ltr}.hash{font-size:15px;margin-left:1mm}.qrbox{text-align:center}.qr{width:20mm;height:20mm;border:1px solid #b98212;border-radius:2.2mm;padding:1mm}
 .barcodeWrap{margin:1.7mm 0 1.5mm;text-align:center}.barcodeTitle{font-size:7px;margin-bottom:.7mm}.barcode{width:74mm;height:12mm;display:block;margin:0 auto}.barcodeText{font-size:7px;font-weight:800;direction:ltr;letter-spacing:.5px;margin-top:.4mm}
-.info{border:1px solid #888;border-radius:2.3mm;display:grid;grid-template-columns:1fr 1.45fr 1fr;min-height:30mm;overflow:hidden}.info>div{padding:1.7mm 2mm;border-left:1px dashed #aaa}.info>div:last-child{border-left:0}.info .k{font-size:7px;color:#b98212;margin-bottom:.8mm}.info .v{font-size:8.4px;font-weight:700;line-height:1.35}.phone{direction:ltr;text-align:right;font-size:8.3px;font-weight:700;margin-top:.8mm}.locationBox{margin-top:1.2mm;border-top:1px dashed #bbb;padding-top:1mm}.locationQr{width:13mm;height:13mm;display:block;margin:1mm auto 0;border:1px solid #bbb;padding:.6mm;border-radius:1.5mm}.locationText{font-size:6.5px;font-weight:700;word-break:break-all;direction:ltr;text-align:center;margin-top:.5mm}
+.info{border:1px solid #888;border-radius:2.3mm;display:grid;grid-template-columns:1fr 1.45fr 1fr;min-height:30mm;overflow:hidden}.info>div{padding:1.7mm 2mm;border-left:1px dashed #aaa}.info>div:last-child{border-left:0}.info .k{font-size:7px;color:#b98212;margin-bottom:.8mm}.info .v{font-size:8.4px;font-weight:700;line-height:1.35}.phone{direction:ltr;text-align:right;font-size:8.3px;font-weight:700;margin-top:.8mm}.locationBox{margin-top:1.2mm;border-top:1px dashed #bbb;padding-top:1mm}.locationQr{width:13mm;height:13mm;display:block;margin:1mm auto 0;border:1px solid #bbb;padding:.6mm;border-radius:1.5mm}.locationText{display:none!important}.productQrBox{margin-top:1.8mm;border:1px solid #999;border-radius:2.2mm;padding:1.4mm;display:flex;align-items:center;gap:2.5mm;min-height:29mm;overflow:hidden}.productQr{width:23mm;height:23mm;flex:0 0 23mm;border:1px solid #bd8a1d;border-radius:2mm;padding:1mm;object-fit:contain}.productInfo{flex:1;min-width:0;text-align:right}.productInfo .title{font-size:7.5px;color:#bd8a1d;font-weight:800;margin-bottom:.7mm}.productDescription{font-size:7px;font-weight:700;line-height:1.35;white-space:pre-wrap;word-break:break-word}.productHint{font-size:5.6px;color:#777;margin-top:.7mm}.footerBox{min-height:10mm;padding:1mm}.footerBox .v{font-size:6.4px;margin-top:.4mm}
 .productsTitle{margin-top:1.8mm;background:#bd8a1d;color:#fff;text-align:center;border-radius:2mm 2mm 0 0;padding:1.1mm;font-size:8.2px;font-weight:800}.products{width:100%;border-collapse:collapse;table-layout:fixed;font-size:7px}.products th,.products td{border:1px solid #999;padding:1.1mm;text-align:center;vertical-align:middle}.products th{font-size:6.8px;background:#fafafa}.products th:nth-child(1){width:44%}.products th:nth-child(2){width:14%}.products th:nth-child(3){width:18%}.products th:nth-child(4){width:24%}.products td:first-child{text-align:right;font-weight:700}.variant{font-size:5.6px;font-weight:400;color:#555;margin-top:.5mm}
 .moneyGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5mm;margin-top:1.7mm}.moneyBox{border:1px solid #999;border-radius:2mm;text-align:center;padding:1.5mm}.moneyBox .k{font-size:6.5px;color:#555}.moneyBox .n{font-size:9.2px;font-weight:900;margin-top:.7mm}.cod{margin-top:1.7mm;border:1.2px solid #bd8a1d;border-radius:2.2mm;padding:1.7mm;text-align:center}.codLabel{font-size:7px;font-weight:800}.codValue{font-size:15px;font-weight:900;color:#bd8a1d;margin-top:.5mm}.deposit{font-size:6.5px;color:#555}
 .footer{display:grid;grid-template-columns:1fr 1fr;gap:1.5mm;margin-top:1.7mm}.footerBox{border:1px solid #aaa;border-radius:2mm;padding:1.6mm;text-align:center;min-height:15mm}.footerBox .k{font-size:6.2px;color:#bd8a1d}.footerBox .v{font-size:7.1px;font-weight:700;line-height:1.35;margin-top:.8mm}.note{margin-top:1.7mm;border:1px solid #aaa;border-radius:2mm;padding:1.7mm;font-size:6.7px;min-height:10mm}.note b{color:#bd8a1d;font-size:7px}
+.previewSheet.dense1 .productQrBox{min-height:25mm;padding:1mm}.previewSheet.dense1 .productQr{width:20mm;height:20mm;flex-basis:20mm}.previewSheet.dense1 .productDescription{font-size:6.4px}.previewSheet.dense2 .productQrBox{min-height:22mm;padding:.8mm}.previewSheet.dense2 .productQr{width:18mm;height:18mm;flex-basis:18mm}.previewSheet.dense2 .productDescription{font-size:6px}.previewSheet.dense3 .productQrBox{min-height:20mm;padding:.7mm}.previewSheet.dense3 .productQr{width:16mm;height:16mm;flex-basis:16mm}.previewSheet.dense3 .productDescription{font-size:5.6px}
 .actions{position:fixed;left:12px;top:12px;z-index:50;display:flex;gap:7px}.actions button{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;font-family:inherit;font-weight:700}.edit{background:#bd8a1d;color:#fff}.print{background:#111;color:#fff}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center}.modal.open{display:flex}.panel{background:#fff;width:min(720px,94vw);max-height:92vh;overflow:auto;padding:18px;border-radius:16px}.panel h3{margin:0 0 14px}.field{margin:9px 0}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:4px}.field input,.field textarea{width:100%;padding:9px;border:1px solid #bbb;border-radius:8px;font-family:inherit}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.productsEdit{width:100%;border-collapse:collapse;font-size:11px}.productsEdit th,.productsEdit td{border:1px solid #ddd;padding:5px}.productsEdit input{width:100%;padding:6px;border:1px solid #ccc;border-radius:6px}.panel .buttons{display:flex;gap:8px;margin-top:14px}.panel button{padding:10px 15px;border:0;border-radius:8px;cursor:pointer}.save{background:#111;color:#fff}.cancel{background:#ddd}
 @media print{body{background:#fff}.actions,.modal{display:none!important}.sheet{margin:0}.label{break-inside:avoid}}
@@ -116,7 +118,7 @@ body{font-family:Arial,"Tahoma",sans-serif;background:#eee;color:#111}
 <div><div class="k">ملاحظات</div><div class="v" id="miniNotes"></div></div>
 </div>
 <div class="productsTitle">المنتجات</div>
-<table class="products"><thead><tr><th>المنتج</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody id="productRows">${rows}</tbody></table>
+<div class="productQrBox"><img class="productQr" id="productQr" alt="QR المنتجات"><div class="productInfo"><div class="title">QR المنتجات</div><div class="productDescription" id="productDescription">-</div><div class="productHint">رمز QR يحتوي على بيانات المنتجات فقط</div></div></div>
 <div class="moneyGrid"><div class="moneyBox"><div class="k">إجمالي المنتجات</div><div class="n" id="subtotal"></div></div><div class="moneyBox"><div class="k">الشحن</div><div class="n" id="shipping"></div></div><div class="moneyBox"><div class="k">إجمالي الطلب</div><div class="n" id="total"></div></div></div>
 <div class="cod"><div class="codLabel" id="paymentLabel">المبلغ المطلوب تحصيله (COD)</div><div class="codValue" id="cod"></div><div class="deposit" id="depositText"></div></div>
 <div class="footer"><div class="footerBox"><div class="k">ملاحظات الطلب</div><div class="v">شكراً لشرائك من CLIXY ❤️</div></div><div class="footerBox"><div class="k">خدمة العملاء</div><div class="v">01033674242</div></div></div>
@@ -128,7 +130,7 @@ body{font-family:Arial,"Tahoma",sans-serif;background:#eee;color:#111}
 <div class="field"><label>العنوان</label><textarea id="eAddress" rows="2"></textarea></div>
 <div class="field"><label>لوكيشن العميل (رابط Google Maps أو أي رابط موقع)</label><input id="eLocation" placeholder="الصق رابط اللوكيشن هنا"></div>
 <div class="field"><label>ملاحظات</label><textarea id="eNotes" rows="2"></textarea></div>
-<div class="field"><label>المنتجات</label><table class="productsEdit"><thead><tr><th>المنتج</th><th>المقاس/اللون</th><th>الكمية</th><th>سعر الوحدة</th></tr></thead><tbody id="editRows"></tbody></table></div>
+<div class="field"><label>وصف المنتج</label><textarea id="eProductDescription" rows="3" placeholder="اكتب وصف المنتج هنا، وسيظهر مكتوبًا بجوار QR المنتجات"></textarea></div>
 <div class="buttons"><button class="save" onclick="saveEdit()">حفظ التعديلات</button><button class="cancel" onclick="closeEdit()">إلغاء</button></div>
 </div></div>
 <script>
@@ -149,8 +151,13 @@ function render(){
   document.getElementById("address").textContent=d.address||"-";
   const loc=String(d.location||"").trim();
   const lq=document.getElementById("locationQr"); const lt=document.getElementById("locationText");
-  if(loc){lq.src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=6&data="+encodeURIComponent(loc);lq.style.display="block";lt.textContent="افتح اللوكيشن";}else{lq.removeAttribute("src");lq.style.display="none";lt.textContent="-";}
+  if(loc){lq.src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=6&data="+encodeURIComponent(loc);lq.style.display="block";}else{lq.removeAttribute("src");lq.style.display="none";}
   document.getElementById("miniNotes").textContent=d.notes||"-";
+  const productText=items.map((x,i)=>`${i+1}. ${x.name}${x.variant?" | "+x.variant:""} | الكمية: ${Number(x.quantity||1)}`).join("\n") || "لا توجد منتجات";
+  const productQrData="CLIXY PRODUCTS\n"+productText;
+  const productQr=document.getElementById("productQr");
+  productQr.src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=4&data="+encodeURIComponent(productQrData);
+  document.getElementById("productDescription").textContent=d.productDescription||"-";
   document.getElementById("subtotal").textContent=subtotal.toFixed(2)+" ج.م";
   document.getElementById("shipping").textContent=shipping.toFixed(2)+" ج.م";
   document.getElementById("total").textContent=total.toFixed(2)+" ج.م";
@@ -162,9 +169,8 @@ function render(){
 function escClient(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function openEdit(){
  const d=getData();
- eDeposit.value=d.deposit||0;eTotal.value=Number(d.total||0);eCod.value=Math.max(0,Number(d.total||0)-Number(d.deposit||0));eShipping.value=Number(d.shipping||0);updateCodField();
- eName.value=d.full_name||"";ePhone2.value=d.phone2||"";eAddress.value=d.address||"";eLocation.value=d.location||"";eNotes.value=d.notes||"";
- editRows.innerHTML=(d.items||[]).map((x,i)=>'<tr><td><input data-i="'+i+'" data-f="name" value="'+escClient(x.name)+'"></td><td><input data-i="'+i+'" data-f="variant" value="'+escClient(x.variant||"")+'"></td><td><input data-i="'+i+'" data-f="quantity" type="number" min="1" step="1" value="'+Number(x.quantity||1)+'"></td><td><input data-i="'+i+'" data-f="price" type="number" min="0" step=".01" value="'+Number(x.price||0)+'"></td></tr>').join("");
+ eDeposit.value=d.deposit||0;eTotal.value=Number(d.total||0);eCod.value=Math.max(0,Number(d.total||0)-Number(d.deposit||0));eShipping.value=Number(d.shipping||0);previousShipping=Number(d.shipping)||0;updateCodField();
+ eName.value=d.full_name||"";ePhone2.value=d.phone2||"";eAddress.value=d.address||"";eLocation.value=d.location||"";eNotes.value=d.notes||"";eProductDescription.value=d.productDescription||"";
  modal.classList.add("open");
 }
 function updateCodField(){
@@ -175,6 +181,9 @@ function updateCodField(){
 function closeEdit(){modal.classList.remove("open")}
 eDeposit.addEventListener("input",updateCodField);
 eTotal.addEventListener("input",updateCodField);
+let previousShipping=Number(eShipping.value)||0;
+eShipping.addEventListener("focus",()=>{previousShipping=Number(eShipping.value)||0;});
+eShipping.addEventListener("input",()=>{const next=Math.max(0,Number(eShipping.value)||0);const current=Math.max(0,Number(eTotal.value)||0);eTotal.value=Math.max(0,current-previousShipping+next).toFixed(2);previousShipping=next;updateCodField();});
 function saveEdit(){
  try {
   const d=getData();
@@ -186,13 +195,9 @@ function saveEdit(){
   d.address=document.getElementById("eAddress").value.trim();
   d.location=document.getElementById("eLocation").value.trim();
   d.notes=document.getElementById("eNotes").value.trim();
+  d.productDescription=document.getElementById("eProductDescription").value.trim();
   d.cod=Math.max(0,d.total-d.deposit);
   d.codManual=false;
-  d.items=(d.items||[]).map((x,i)=>{
-    const get=f=>document.querySelector('#editRows [data-i="'+i+'"][data-f="'+f+'"]');
-    if(!get("name")) return null;
-    return {...x,name:get("name").value.trim(),variant:get("variant").value.trim(),quantity:Math.max(1,Number(get("quantity").value)||1),price:Math.max(0,Number(get("price").value)||0)};
-  }).filter(x=>x && x.name);
   localStorage.setItem(ORDER_KEY,JSON.stringify(d));
   render();
   closeEdit();
