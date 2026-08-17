@@ -1,28 +1,36 @@
 import QRCode from "qrcode";
 
-function payload(items, compact = false) {
-  const arr = Array.isArray(items) ? items : [];
-  if (compact) return arr.map(x => `${String(x?.name || "منتج").trim()} × ${Number(x?.quantity || 1)}`).join("\n") || "لا توجد منتجات";
-  return arr.map(x => {
-    const n = String(x?.name || "منتج").trim();
-    const v = String(x?.variant || "").trim();
-    const q = Number(x?.quantity || 1);
-    return v ? `${n} | ${v} | الكمية: ${q}` : `${n} | الكمية: ${q}`;
-  }).join("\n") || "لا توجد منتجات";
+const DEFAULT_APP_URL = "https://clixy-theta.vercel.app";
+
+function getOrigin(req) {
+  const proto = req.headers?.["x-forwarded-proto"] || "https";
+  const host = req.headers?.["x-forwarded-host"] || req.headers?.host;
+  return host ? `${proto}://${host}` : DEFAULT_APP_URL;
 }
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ ok:false, error:"Method not allowed" });
+
   try {
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
-    let dataUrl;
-    try {
-      dataUrl = await QRCode.toDataURL(payload(body.items), { errorCorrectionLevel: "M", margin: 2, width: 600 });
-    } catch (e) {
-      dataUrl = await QRCode.toDataURL(payload(body.items, true), { errorCorrectionLevel: "L", margin: 2, width: 600 });
+    const order = String(body.order || "").trim();
+
+    // The QR carries only a short URL, not the full product list.
+    // This keeps the QR simple and much easier for phone cameras to scan.
+    if (!order) {
+      return res.status(400).json({ ok:false, error:"رقم البوليصة مطلوب لإنشاء QR المنتجات" });
     }
+
+    const url = `${getOrigin(req)}/api/products?order=${encodeURIComponent(order)}`;
+    const dataUrl = await QRCode.toDataURL(url, {
+      errorCorrectionLevel: "M",
+      margin: 4,
+      width: 800,
+      color: { dark: "#000000", light: "#ffffff" }
+    });
+
     res.setHeader("Cache-Control", "no-store");
-    return res.status(200).json({ ok:true, dataUrl });
+    return res.status(200).json({ ok:true, dataUrl, url });
   } catch (e) {
     console.error("product-qr", e);
     return res.status(400).json({ ok:false, error:"تعذر إنشاء QR المنتجات" });

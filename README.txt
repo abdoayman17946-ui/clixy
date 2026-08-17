@@ -7,3 +7,5 @@ Product QR reliability fix:
 - Preview waits for QR generation before printing.
 - The direct /api/label page also generates its product QR server-side.
 - All V7.2 behavior is preserved.
+
+V7.4: Product QR now contains a short per-order URL (/api/products?order=...), so the QR remains clean and scan-friendly even with many products. The URL opens a product list for that specific order.

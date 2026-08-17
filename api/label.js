@@ -67,17 +67,15 @@ export default async function handler(req, res) {
     const orderNo = String(o.short_id || id);
     const barcodeValue = `CLX-${new Date().getFullYear()}-${orderNo.padStart(6, "0")}`;
     const qr = await QRCode.toDataURL(FIXED_QR_URL, { margin: 1, width: 220 });
-    const productText = items.map(x => {
-      const v = x.variant ? ` | ${x.variant}` : "";
-      return `${x.name || "منتج"}${v} | الكمية: ${Number(x.quantity || 1)}`;
-    }).join("\n") || "لا توجد منتجات";
-    let productQr;
-    try {
-      productQr = await QRCode.toDataURL(productText, { errorCorrectionLevel: "M", margin: 2, width: 600 });
-    } catch (e) {
-      const compact = items.map(x => `${x.name || "منتج"} × ${Number(x.quantity || 1)}`).join("\n") || "لا توجد منتجات";
-      productQr = await QRCode.toDataURL(compact, { errorCorrectionLevel: "L", margin: 2, width: 600 });
-    }
+    // QR المنتجات يحتوي على رابط قصير فقط؛ صفحة الرابط تعرض منتجات هذه البوليصة.
+    // هذا يجعل QR أقل كثافة وأسهل بكثير في المسح من الموبايل حتى مع منتجات كثيرة.
+    const productUrl = `${APP_URL}/api/products?order=${encodeURIComponent(orderNo)}`;
+    const productQr = await QRCode.toDataURL(productUrl, {
+      errorCorrectionLevel: "M",
+      margin: 4,
+      width: 800,
+      color: { dark: "#000000", light: "#ffffff" }
+    });
 
     const initial = {
       deposit: 0,
