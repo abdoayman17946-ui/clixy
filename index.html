@@ -8,14 +8,14 @@
 *{box-sizing:border-box}body{margin:0;font-family:Arial,"Tahoma",sans-serif;background:var(--bg);color:var(--ink)}
 .top{background:#fff;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:10}.topIn{max-width:1250px;margin:auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:15px}.brand{display:flex;align-items:center;gap:12px}.brand img{width:120px}.brand span{font-weight:700;color:#777;font-size:13px}
 .wrap{max-width:1250px;margin:22px auto;padding:0 18px}.hero{background:#fff;border-radius:18px;padding:20px;box-shadow:0 4px 20px #0000000b}.hero h1{margin:0 0 8px;font-size:24px}.hero p{margin:0;color:#666;font-size:14px}
-.toolbar{margin-top:16px;display:grid;grid-template-columns:1fr auto auto;gap:9px}.input{padding:12px 14px;border:1px solid #ccc;border-radius:10px;font-family:inherit;font-size:14px}.btn{border:0;border-radius:10px;padding:12px 16px;cursor:pointer;font-family:inherit;font-weight:800}.gold{background:var(--gold);color:#fff}.dark{background:#111;color:#fff}.light{background:#eee}.danger{background:#b3261e;color:#fff}
+.toolbar{margin-top:16px;display:grid;grid-template-columns:1fr auto auto;gap:9px}.input{padding:12px 14px;border:1px solid #ccc;border-radius:10px;font-family:inherit;font-size:14px}.btn{border:0;border-radius:10px;padding:12px 16px;cursor:pointer;font-family:inherit;font-weight:800}.gold{background:var(--gold);color:#fff}.dark{background:#111;color:#fff}.light{background:#eee}.danger{background:#b3261e;color:#fff}.archiveBtn{background:#fff0f0;color:#b3261e;border:1px solid #f0c4c4}.restoreBtn{background:#eef8ee;color:#187a2f;border:1px solid #c6e4cc}.archivedSection{display:none;margin-top:24px}.archivedSection.open{display:block}.archiveCard{background:#fff;border:1px solid #ddd;border-radius:14px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}.archiveCard .info{border:0;min-height:auto;display:block}.archiveCard .info strong{display:block;margin-bottom:5px}.archiveSearch{max-width:320px}
 .hint{font-size:12px;color:#777;margin-top:9px}.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 10px}.bar h2{margin:0;font-size:16px}.tools{display:flex;gap:7px;flex-wrap:wrap}
 .orders{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}.order{background:#fff;border:1px solid #e2e2e2;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:11px}.order.selected{border:2px solid var(--gold);padding:13px}.rowTop{display:flex;align-items:center;justify-content:space-between;gap:10px}.check{width:20px;height:20px;accent-color:var(--gold)}.num{font-size:19px;font-weight:900}.date{font-size:11px;color:#888}.customer{font-weight:700}.meta{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:12px}.meta div{background:#f7f7f7;border-radius:8px;padding:8px}.actions{display:flex;gap:7px}.actions .btn{flex:1;padding:9px}.empty{background:#fff;border:1px dashed #bbb;border-radius:14px;padding:30px;text-align:center;color:#777}
 .status{font-size:11px;padding:5px 8px;border-radius:99px;background:#eee;display:inline-block}.loading{opacity:.6;pointer-events:none}
 .modal{display:none;position:fixed;inset:0;background:#0008;z-index:50;align-items:center;justify-content:center}.modal.open{display:flex}.panel{background:#fff;width:min(1250px,94vw);max-height:92vh;overflow:auto;border-radius:18px;padding:16px}.panelHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.panelHead h3{margin:0}.previewArea{display:flex;flex-wrap:wrap;gap:15px;justify-content:center;background:#e9e9e9;padding:15px;border-radius:12px}.previewSheet{width:100mm;height:150mm;background:#fff;flex:none;box-shadow:0 2px 10px #0003;overflow:hidden}
 .printLabel{width:100%;height:100%;padding:3.2mm 3.4mm}.printLabel .inside{width:100%;height:100%;box-sizing:border-box;border:1px solid #111;border-radius:4mm;padding:2.7mm 2.8mm;display:flex;flex-direction:column;overflow:hidden;font-family:Arial,"Tahoma",sans-serif;color:#111}
 .ph{direction:ltr;display:grid;grid-template-columns:1fr 1fr .72fr;align-items:center;gap:2mm;padding-bottom:2.1mm;border-bottom:1.4px solid var(--gold)}.ph img{width:38mm}.pc{text-align:center;direction:rtl}.pc .small{font-size:8.2px;color:var(--gold)}.pc .on{font-size:18mm;line-height:.9;font-weight:900;color:var(--gold);direction:ltr}.qrbox{text-align:center}.qrbox img{width:20mm;height:20mm;border:1px solid var(--gold);border-radius:2.2mm;padding:1mm}.qrurl{display:none}.bc{margin:1.7mm 0 1.5mm;text-align:center}.bcTitle{font-size:7px;margin-bottom:.7mm}.bc svg{width:74mm;height:12mm;display:block;margin:auto}.bcText{font-size:7px;font-weight:800;direction:ltr;letter-spacing:.5px;margin-top:.4mm}
-.inf{border:1px solid #888;border-radius:2.3mm;display:grid;grid-template-columns:1fr 1.45fr 1fr;min-height:30mm;overflow:hidden}.inf>div{padding:1.7mm 2mm;border-left:1px dashed #aaa}.inf>div:last-child{border-left:0}.k{font-size:7px;color:var(--gold);margin-bottom:.8mm}.v{font-size:8.4px;font-weight:700;line-height:1.35}.ltr{direction:ltr;text-align:right;font-size:8.3px;font-weight:700;margin-top:.8mm}.locationBox{margin-top:1.2mm;border-top:1px dashed #bbb;padding-top:1mm}.locationQr{width:13mm;height:13mm;display:block;margin:1mm auto 0;border:1px solid #bbb;padding:.6mm;border-radius:1.5mm}.locationText{display:none}.pt{margin-top:1.8mm;background:var(--gold);color:#fff;text-align:center;border-radius:2mm 2mm 0 0;padding:1.1mm;font-size:8.2px;font-weight:800}.ptb{width:100%;border-collapse:collapse;table-layout:fixed;font-size:7px}.productQrArea{flex:none}.productQrRow{display:flex;direction:ltr;align-items:center;justify-content:space-between;gap:5mm;border:1px solid #999;border-top:0;border-radius:0 0 2mm 2mm;padding:2.2mm;min-height:25mm}.productQrWrap{width:20mm;flex:0 0 20mm;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}.qrCaption{font-size:6.5px;color:var(--gold);font-weight:800;margin-bottom:.8mm}.productQr{width:16mm;height:16mm;object-fit:contain;border:1px solid #bbb;border-radius:1.5mm;padding:.5mm;transform:translateY(-1.3mm)}.productDescription{flex:1;min-width:0;text-align:right;direction:rtl}.productDescription .v{font-size:7.5px;white-space:pre-wrap;word-break:break-word;max-height:18mm;overflow:hidden}
+.inf{border:1px solid #888;border-radius:2.3mm;display:grid;grid-template-columns:1fr 1.45fr 1fr;min-height:30mm;overflow:hidden}.inf>div{padding:1.7mm 2mm;border-left:1px dashed #aaa}.inf>div:last-child{border-left:0}.k{font-size:7px;color:var(--gold);margin-bottom:.8mm}.v{font-size:8.4px;font-weight:700;line-height:1.35}.ltr{direction:ltr;text-align:right;font-size:8.3px;font-weight:700;margin-top:.8mm}.locationBox{margin-top:1.2mm;border-top:1px dashed #bbb;padding-top:1mm}.locationQr{width:13mm;height:13mm;display:block;margin:1mm auto 0;border:1px solid #bbb;padding:.6mm;border-radius:1.5mm}.locationText{display:none}.pt{margin-top:1.8mm;background:var(--gold);color:#fff;text-align:center;border-radius:2mm 2mm 0 0;padding:1.1mm;font-size:8.2px;font-weight:800}.ptb{width:100%;border-collapse:collapse;table-layout:fixed;font-size:7px}.productQrArea{flex:none}.productQrRow{display:flex;direction:ltr;align-items:center;justify-content:space-between;gap:5mm;border:1px solid #999;border-top:0;border-radius:0 0 2mm 2mm;padding:2.2mm;min-height:25mm}.productQrWrap{width:20mm;flex:0 0 20mm;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}.qrCaption{font-size:6.5px;color:var(--gold);font-weight:800;margin-bottom:2.2mm;transform:translateY(-.6mm)}.productQr{width:16mm;height:16mm;object-fit:contain;border:1px solid #bbb;border-radius:1.5mm;padding:.5mm;transform:none}.productDescription{flex:1;min-width:0;text-align:right;direction:rtl}.productDescription .v{font-size:7.5px;white-space:pre-wrap;word-break:break-word;max-height:18mm;overflow:hidden}
 .ptb th,.ptb td{border:1px solid #999;padding:1.1mm;text-align:center;vertical-align:middle}.ptb th:nth-child(1){width:44%}.ptb th:nth-child(2){width:14%}.ptb th:nth-child(3){width:18%}.ptb th:nth-child(4){width:24%}.ptb td:first-child{text-align:right;font-weight:700}.variant{font-size:5.6px;font-weight:400;color:#555;margin-top:.5mm}.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1mm;margin-top:1.7mm}.mb{border:1px solid #999;border-radius:2mm;text-align:center;padding:1.25mm;min-width:0}.mb .n{font-size:8.4px;font-weight:900;margin-top:.7mm}.cod{margin-top:1.7mm;border:1.2px solid var(--gold);border-radius:2.2mm;padding:1.7mm;text-align:center}.cod .cl{font-size:7px;font-weight:800}.cod .cv{font-size:15px;font-weight:900;color:var(--gold);margin-top:.5mm}.dep{font-size:6.5px;color:#555}.ft{display:grid;grid-template-columns:1fr 1fr;gap:1.5mm;margin-top:1.7mm}.fb{border:1px solid #aaa;border-radius:2mm;padding:1mm;text-align:center;min-height:9.5mm}.fb .v{font-size:6.2px;margin-top:.4mm}.note{margin-top:1.7mm;border:1px solid #aaa;border-radius:2mm;padding:1.7mm;font-size:6.7px;min-height:10mm}.note b{color:var(--gold);font-size:7px}
 .toast{position:fixed;bottom:20px;left:20px;background:#111;color:#fff;padding:11px 15px;border-radius:10px;display:none;z-index:100}.toast.show{display:block}
 
@@ -81,8 +81,14 @@
 <main class="wrap"><section class="hero"><h1>بوالص CLIXY</h1><p>اختار أكثر من طلب، راجع البوالص، وعدّل البيانات من صفحة البوليصة قبل الطباعة.</p>
 <div class="toolbar"><input class="input" id="ids" placeholder="أرقام الطلبات: 26,27,28 أو 26 27 28"><button class="btn gold" onclick="addIds()">إضافة الطلبات</button><button class="btn dark" onclick="previewSelected()">معاينة المحدد</button></div>
 <div class="hint">لو الطلب موجود تلقائيًا من الـ Webhook سيظهر هنا. ويمكنك أيضًا إضافة أي رقم طلب يدويًا.</div></section>
-<div class="bar"><h2>الطلبات <span id="count"></span></h2><div class="tools"><button class="btn light" onclick="selectAll(true)">تحديد الكل</button><button class="btn light" onclick="selectAll(false)">إلغاء التحديد</button><button class="btn dark" onclick="printSelected()">🖨️ طباعة المحدد</button></div></div>
-<section id="orders" class="orders"></section></main>
+<div class="bar"><h2>الطلبات <span id="count"></span></h2><div class="tools"><button class="btn light" onclick="selectAll(true)">تحديد الكل</button><button class="btn light" onclick="selectAll(false)">إلغاء التحديد</button><button class="btn dark" onclick="printSelected()">🖨️ طباعة المحدد</button><button class="btn light" onclick="toggleArchived()">🗃️ الفواتير المحذوفة</button></div></div>
+<section id="orders" class="orders"></section>
+<section id="archivedSection" class="archivedSection">
+  <div class="bar"><h2>الفواتير المحذوفة <span id="archivedCount"></span></h2>
+    <div class="tools"><input class="input archiveSearch" id="archiveSearch" placeholder="بحث برقم الفاتورة أو الاسم أو الهاتف" oninput="renderArchived()"><button class="btn light" onclick="toggleArchived()">إخفاء</button></div>
+  </div>
+  <div id="archivedOrders" class="orders"></div>
+</section></main>
 <div class="modal" id="previewModal"><div class="panel"><div class="panelHead"><h3>معاينة البوالص قبل الطباعة</h3><div class="tools"><button class="btn dark" onclick="window.print()">🖨️ طباعة الآن</button><button class="btn light" onclick="closePreview()">إغلاق</button></div></div><div id="previewArea" class="previewArea"></div></div></div>
 <div class="modal" id="editModal"><div class="editPanel">
   <div class="editHero"><div><div class="editEyebrow">CLIXY • إدارة البوليصة</div><h3 id="editTitle">تعديل البوليصة</h3><p>عدّل بيانات العميل والشحن والوصف ثم احفظ التعديلات.</p></div><button class="iconClose" onclick="closeDashboardEdit()">×</button></div>
@@ -94,7 +100,7 @@
     <div class="editCard calculated codCard"><label>المبلغ المطلوب تحصيله (COD)</label><input id="dCod" type="number" min="0" step=".01" readonly><small>الإجمالي − الديبوزيت</small></div>
   </div></div>
   <div class="editSection"><div class="sectionTitle">👤 بيانات العميل</div><div class="row">
-    <div class="editCard"><label>اسم العميل</label><input id="dName"></div>
+    <div class="editCard calculated"><label>اسم العميل</label><input id="dName" readonly><small>يتغير من داخل تعديل البوليصة فقط</small></div>
     <div class="editCard"><label>رقم إضافي</label><input id="dPhone2"></div>
   </div>
   <div class="editCard full"><label>العنوان</label><textarea id="dAddress" rows="2"></textarea></div>
@@ -107,6 +113,55 @@
 <script>
 const state={orders:new Map(),selected:new Set(),loading:false};
 const STORAGE_ORDERS="clixy_dashboard_orders";
+const STORAGE_ARCHIVED="clixy_dashboard_archived";
+function getArchived(){try{return new Set(JSON.parse(localStorage.getItem(STORAGE_ARCHIVED)||"[]").map(String))}catch(e){return new Set()}}
+function saveArchived(set){localStorage.setItem(STORAGE_ARCHIVED,JSON.stringify([...set]))}
+function isArchived(id){return getArchived().has(String(id))}
+function archiveOrder(id){
+  id=String(id);
+  const existing=state.orders.get(id);
+  const data=mergeOrder(existing||{});
+  const saved=JSON.parse(localStorage.getItem(STORAGE_ARCHIVED+"_data")||"{}");
+  saved[id]=data; localStorage.setItem(STORAGE_ARCHIVED+"_data",JSON.stringify(saved));
+  const set=getArchived(); set.add(id); saveArchived(set);
+  state.selected.delete(id); state.orders.delete(id); persistIds(); renderList(); renderArchived();
+  toast("تم إخفاء الفاتورة من الداشبورد ويمكن استعادتها من الفواتير المحذوفة");
+}
+function restoreOrder(id){
+  id=String(id); const set=getArchived(); set.delete(id); saveArchived(set);
+  loadIds([id]); renderArchived(); toast("تمت استعادة الفاتورة");
+}
+function toggleArchived(){
+  document.getElementById("archivedSection").classList.toggle("open");
+  renderArchived();
+}
+function renderArchived(){
+  const wrap=document.getElementById("archivedOrders"), count=document.getElementById("archivedCount");
+  if(!wrap)return;
+  const ids=[...getArchived()];
+  count.textContent="("+ids.length+")";
+  const q=(document.getElementById("archiveSearch")?.value||"").trim().toLowerCase();
+  const saved=JSON.parse(localStorage.getItem(STORAGE_ARCHIVED+"_data")||"{}");
+  const filtered=ids.map(id=>({id,data:saved[id]||null})).filter(x=>{
+    if(!q)return true;
+    const d=x.data||{};
+    return [x.id,d.full_name,d.name,d.phone].some(v=>String(v||"").toLowerCase().includes(q));
+  });
+  if(!filtered.length){wrap.innerHTML='<div class="empty">لا توجد فواتير محذوفة مطابقة للبحث.</div>';return}
+  wrap.innerHTML=filtered.map(x=>{
+    const d=x.data||{};
+    return `<article class="order"><div class="rowTop"><div class="num">#${esc(x.id)}</div><div class="date">مؤرشفة</div></div>
+      <div class="customer">${esc(d.full_name||d.name||"بدون اسم")}</div>
+      <div class="meta"><div>📞 ${esc(d.phone||"-")}</div><div>💰 ${Number(d.total||d.total_cost||0).toFixed(2)} ج.م</div></div>
+      <div class="actions"><button class="btn light" onclick="singlePreviewArchived('${esc(x.id)}')">👁 معاينة</button><button class="btn restoreBtn" onclick="restoreOrder('${esc(x.id)}')">♻️ استعادة</button></div>
+    </article>`;
+  }).join("");
+}
+function singlePreviewArchived(id){
+  const d=JSON.parse(localStorage.getItem(STORAGE_ARCHIVED+"_data")||"{}")[String(id)];
+  if(!d){toast("بيانات الفاتورة المؤرشفة غير متاحة");return}
+  state.orders.set(String(id),d); state.selected=new Set([String(id)]); previewSelected();
+}
 function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2500)}
 function keyFor(id){return "clixy_label_v2_"+id}
 function getOverride(id){try{return JSON.parse(localStorage.getItem(keyFor(id))||"null")}catch(e){return null}}
@@ -122,7 +177,7 @@ function renderList(){
  <div class="rowTop"><label><input class="check" type="checkbox" ${sel?"checked":""} onchange="toggle('${esc(id)}',this.checked)"></label><div class="num">#${esc(id)}</div><div class="date">${esc(o.status||"")}</div></div>
  <div class="customer">${esc(customerOf(o))}</div>
  <div class="meta"><div>📞 ${esc(o.phone||"-")}</div><div>💰 ${totalOf(o).toFixed(2)} ج.م</div></div>
- <div class="actions"><button class="btn light" onclick="openDashboardEdit('${esc(id)}')">✏️ تعديل</button><button class="btn dark" onclick="singlePreview('${esc(id)}')">👁 معاينة</button></div>
+ <div class="actions"><button class="btn light" onclick="openDashboardEdit('${esc(id)}')">✏️ تعديل</button><button class="btn dark" onclick="singlePreview('${esc(id)}')">👁 معاينة</button><button class="btn archiveBtn" onclick="archiveOrder('${esc(id)}')">🗑️ حذف</button></div>
  </article>`}).join("");
 }
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -144,7 +199,7 @@ async function loadIds(ids){
      const r=await fetch("/api/easyorders?orders="+encodeURIComponent(batch.join(",")));
      const data=await r.json();
      const arr=data.results||[data];
-     for(const x of arr){if(x.ok&&x.data){const o=x.data;const id=String(o.short_id||x.order);state.orders.set(id,o);state.selected.add(id)}else toast("تعذر تحميل الطلب #"+(x.order||""))}
+     for(const x of arr){if(x.ok&&x.data){const o=x.data;const id=String(o.short_id||x.order);if(!isArchived(id)){state.orders.set(id,o);state.selected.add(id)}}else toast("تعذر تحميل الطلب #"+(x.order||""))}
    }
    persistIds();renderList();
  }catch(e){toast("حصل خطأ أثناء تحميل الطلبات")}finally{state.loading=false;document.body.classList.remove("loading")}
@@ -205,12 +260,19 @@ function saveDashboardEdit(){
  const base=dashboardEditData(editingId); const baseFinancial=financialBase(base); const items=Array.isArray(base.items)&&base.items.length?base.items:(Array.isArray(base.cart_items)?base.cart_items:[]);
  const subtotal=baseFinancial.subtotal;
  const shipping=Math.max(0,Number(editEls.shipping.value)||0); const coupon=Math.max(0,Number(editEls.coupon.value)||0); const total=Math.max(0,subtotal+shipping-coupon); const deposit=Math.max(0,Number(editEls.deposit.value)||0);
- const override={...base,deposit,shipping,coupon_discount:coupon,total,cod:Math.max(0,total-deposit),codManual:false,full_name:editEls.name.value.trim(),phone2:editEls.phone2.value.trim(),address:editEls.address.value.trim(),location:editEls.location.value.trim(),notes:editEls.notes.value.trim(),product_description:editEls.description.value.trim(),items};
+ const override={...base,deposit,shipping,coupon_discount:coupon,total,cod:Math.max(0,total-deposit),codManual:false,full_name:base.full_name||base.name||editEls.name.value.trim(),phone2:editEls.phone2.value.trim(),address:editEls.address.value.trim(),location:editEls.location.value.trim(),notes:editEls.notes.value.trim(),product_description:editEls.description.value.trim(),items};
  localStorage.setItem(keyFor(editingId),JSON.stringify(override)); state.orders.set(editingId,{...state.orders.get(editingId),...override,items}); renderList(); closeDashboardEdit(); singlePreview(editingId); toast("تم حفظ التعديلات");
 }
 editEls.deposit.addEventListener("input",updateDashboardTotals);
 editEls.shipping.addEventListener("input",updateDashboardTotals);
 editEls.coupon.addEventListener("input",updateDashboardTotals);
+window.addEventListener("storage",e=>{
+  if(e.key&&e.key.startsWith("clixy_label_v2_")){
+    const id=e.key.replace("clixy_label_v2_","");
+    const raw=state.orders.get(id);
+    if(raw){state.orders.set(id,mergeOrder(raw));renderList();renderArchived();}
+  }
+});
 function printSelected(){if(!state.selected.size){toast("حدد طلبًا واحدًا على الأقل");return}previewSelected(true)}
 async function waitForPrintReady(root){
   const imgs=[...root.querySelectorAll("img")];
@@ -250,6 +312,6 @@ function productQrUrl(items){
 function barcodeSvg(text){
  const p=["212222","222122","222221","121223","121322","131222","122213","122312","132212","221213","221312","231212","112232","122132","122231","113222","123122","123221","223211","221132","221231","213212","223112","312131","311222","321122","321221","312212","322112","322211","212123","212321","232121","111323","131123","131321","112313","132113","132311","211313","231113","231311","112133","112331","132131","113123","113321","133121","313121","211331","231131","213113","223112","213131","311123","311321","331121","312113","312311","332111","314111","221411","431111","111224","111422","121124","121421","141122","141221","112214","112412","122114","122411","142112","142211","241211","221114","413111","241112","134111","111242","121142","121241","114212","124112","124211","411212","421112","421211","212141","214121","412121","111143","111341","131141","114113","114311","411113","411311","113141","114131","311141","411131","211412","211214","211232","2331112"];const s=String(text).replace(/[^\x20-\x7E]/g,"");const v=[104];for(let i=0;i<s.length;i++)v.push(s.charCodeAt(i)-32);let c=104;for(let i=1;i<v.length;i++)c+=v[i]*i;v.push(c%103,106);let x=10,r="";for(const n of v){let black=true;for(const ch of p[n]){const w=+ch;if(black)r+=`<rect x="${x}" y="0" width="${w}" height="62"/>`;x+=w;black=!black}}return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${x+10} 62"><rect width="100%" height="100%" fill="#fff"/>${r}</svg>`;
 }
-renderList();loadSaved();
+renderList();loadSaved();renderArchived();
 </script>
 </body></html>
