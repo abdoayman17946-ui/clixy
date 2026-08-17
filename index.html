@@ -258,11 +258,30 @@ function openDashboardEdit(id){
 function closeDashboardEdit(){editEls.modal.classList.remove("open");editingId=null}
 function saveDashboardEdit(){
  if(!editingId)return;
- const base=dashboardEditData(editingId); const baseFinancial=financialBase(base); const items=Array.isArray(base.items)&&base.items.length?base.items:(Array.isArray(base.cart_items)?base.cart_items:[]);
- const subtotal=baseFinancial.subtotal;
- const shipping=Math.max(0,Number(editEls.shipping.value)||0); const coupon=Math.max(0,Number(editEls.coupon.value)||0); const total=Math.max(0,subtotal+shipping-coupon); const deposit=Math.max(0,Number(editEls.deposit.value)||0);
- const override={...base,deposit,shipping,coupon_discount:coupon,total,cod:Math.max(0,total-deposit),codManual:false,full_name:editEls.name.value.trim(),name:editEls.name.value.trim(),phone:editEls.phone.value.trim(),phone_number:editEls.phone.value.trim(),phone2:editEls.phone2.value.trim(),address:editEls.address.value.trim(),location:editEls.location.value.trim(),notes:editEls.notes.value.trim(),product_description:editEls.description.value.trim(),items};
- localStorage.setItem(keyFor(editingId),JSON.stringify(override)); state.orders.set(editingId,{...state.orders.get(editingId),...override,items}); renderList(); closeDashboardEdit(); singlePreview(editingId); toast("تم حفظ التعديلات");
+ const id=String(editingId);
+ try{
+   const base=dashboardEditData(id);
+   const baseFinancial=financialBase(base);
+   const items=Array.isArray(base.items)&&base.items.length?base.items:(Array.isArray(base.cart_items)?base.cart_items:[]);
+   const subtotal=baseFinancial.subtotal;
+   const shipping=Math.max(0,Number(editEls.shipping.value)||0);
+   const coupon=Math.max(0,Number(editEls.coupon.value)||0);
+   const total=Math.max(0,subtotal+shipping-coupon);
+   const deposit=Math.max(0,Number(editEls.deposit.value)||0);
+   const old=state.orders.get(id)||base;
+   const override={...old,...base,deposit,shipping,coupon_discount:coupon,total,cod:Math.max(0,total-deposit),codManual:false,full_name:editEls.name.value.trim(),name:editEls.name.value.trim(),phone:editEls.phone.value.trim(),phone_number:editEls.phone.value.trim(),phone2:editEls.phone2.value.trim(),address:editEls.address.value.trim(),location:editEls.location.value.trim(),notes:editEls.notes.value.trim(),product_description:editEls.description.value.trim(),items};
+   localStorage.setItem(keyFor(id),JSON.stringify(override));
+   state.orders.set(id,mergeOrder({...old,...override,items})||{...old,...override,items});
+   state.selected=new Set([id]);
+   persistIds();
+   renderList();
+   closeDashboardEdit();
+   toast("تم حفظ التعديلات");
+   setTimeout(()=>singlePreview(id),50);
+ }catch(err){
+   console.error("saveDashboardEdit",err);
+   toast("حصل خطأ أثناء حفظ التعديلات");
+ }finally{editingId=null;}
 }
 editEls.deposit.addEventListener("input",updateDashboardTotals);
 editEls.shipping.addEventListener("input",updateDashboardTotals);
@@ -283,11 +302,24 @@ async function waitForPrintReady(root){
 function singlePreview(id){state.selected=new Set([id]);renderList();previewSelected()}
 async function previewSelected(autoPrint=false){
  const ids=[...state.selected];if(!ids.length){toast("حدد طلبًا واحدًا على الأقل");return}
- const area=document.getElementById("previewArea");area.innerHTML='<div style="padding:25px">جاري تجهيز المعاينة...</div>';document.getElementById("previewModal").classList.add("open");
- const fresh=[];
- for(const id of ids){const existing=state.orders.get(id);fresh.push(mergeOrder(existing||{}))}
- area.innerHTML=fresh.map(renderLabel).join("");
- if(autoPrint){await waitForPrintReady(area);requestAnimationFrame(()=>setTimeout(()=>window.print(),200));}
+ const area=document.getElementById("previewArea");
+ area.innerHTML='<div style="padding:25px;text-align:center">جاري تجهيز المعاينة...</div>';
+ document.getElementById("previewModal").classList.add("open");
+ try{
+   const fresh=[];
+   for(const id of ids){
+     const existing=state.orders.get(String(id));
+     const merged=mergeOrder(existing||{});
+     if(!merged) throw new Error("تعذر تجهيز بيانات الطلب #"+id);
+     fresh.push(merged);
+   }
+   area.innerHTML=fresh.map(o=>{try{return renderLabel(o)}catch(err){console.error("renderLabel",err,o);return '<div style="padding:25px;text-align:center;color:#b00020">تعذر تجهيز البوليصة #'+esc(o.short_id||o.id||o.order||"")+'. أعد المحاولة.</div>';}}).join("");
+   if(autoPrint){await waitForPrintReady(area);requestAnimationFrame(()=>setTimeout(()=>window.print(),200));}
+ }catch(err){
+   console.error("previewSelected",err);
+   area.innerHTML='<div style="padding:25px;text-align:center;color:#b00020">حصل خطأ أثناء تجهيز المعاينة. جرّب إغلاق المعاينة وفتحها مرة أخرى.</div>';
+   toast("تعذر تجهيز المعاينة");
+ }
 }
 function closePreview(){document.getElementById("previewModal").classList.remove("open")}
 function renderLabel(o){
