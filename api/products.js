@@ -1,4 +1,16 @@
 const APP_NAME = "CLIXY";
+import { list } from "@vercel/blob";
+
+async function loadOverride(id) {
+  try {
+    const result = await list({ prefix: `shipping-label-overrides/order-${id}.json`, limit: 5 });
+    const blob = (result.blobs || [])[0];
+    if (!blob?.url) return null;
+    const r = await fetch(blob.url, { cache: "no-store" });
+    return r.ok ? await r.json() : null;
+  } catch { return null; }
+}
+
 const API_BASE = "https://api.easy-orders.net/api/v1/external-apps/orders/short/";
 
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({
@@ -61,7 +73,9 @@ export default async function handler(req, res) {
     const result = await r.json();
     if (!r.ok) return res.status(r.status).send("تعذر تحميل تفاصيل البوليصة");
 
-    const o = result.data || result;
+    let o = result.data || result;
+    const override = await loadOverride(id);
+    if (override) o = { ...o, ...override, items: Array.isArray(override.items) ? override.items : o.items, cart_items: Array.isArray(override.cart_items) ? override.cart_items : o.cart_items };
     const items = parseItems(o);
     const orderNo = String(o.short_id || id);
     const phone = first(o, ["phone", "customer_phone", "mobile", "phone_number"]);
@@ -112,7 +126,7 @@ body{margin:0;background:#f3f3f3;color:#111;font-family:Arial,"Tahoma",sans-seri
 .item{display:grid;grid-template-columns:34px 1fr auto auto;gap:12px;align-items:center;border:1px solid #e5e5e5;border-radius:14px;padding:12px;margin-bottom:9px}.num{width:30px;height:30px;border-radius:50%;background:#bd8a1d;color:#fff;display:grid;place-items:center;font-weight:800}.name{font-weight:800;font-size:15px}.variant{font-size:12px;color:#777;margin-top:4px}.qty{font-weight:800;direction:ltr}.price{font-weight:800;white-space:nowrap;color:#9a6d08}.empty{text-align:center;padding:35px;color:#777}
 .totals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.totalBox{border:1px solid #ddd;border-radius:12px;padding:10px;text-align:center}.totalBox .label{font-size:10px}.totalBox .value{font-size:15px}
 .cod{margin-top:10px;border:2px solid #bd8a1d;border-radius:14px;padding:13px;text-align:center}.cod .label{font-size:12px}.cod .value{font-size:24px;color:#bd8a1d;font-weight:900}
-.map{display:inline-block;margin-top:8px;color:#9a6d08;font-weight:800;text-decoration:none;border:1px solid #bd8a1d;border-radius:10px;padding:8px 12px}.foot{text-align:center;padding:15px;color:#888;font-size:12px}
+.invoiceBtn{display:block;text-align:center;background:#bd8a1d;color:#fff;font-weight:900;text-decoration:none;border-radius:12px;padding:12px;margin-top:4px}.map{display:inline-block;margin-top:8px;color:#9a6d08;font-weight:800;text-decoration:none;border:1px solid #bd8a1d;border-radius:10px;padding:8px 12px}.foot{text-align:center;padding:15px;color:#888;font-size:12px}
 @media(max-width:600px){.info,.totals{grid-template-columns:1fr 1fr}.head{padding:17px}.logo{width:88px}h1{font-size:20px}.item{grid-template-columns:30px 1fr auto}.price{display:none}}
 </style>
 </head>
@@ -133,7 +147,7 @@ body{margin:0;background:#f3f3f3;color:#111;font-family:Arial,"Tahoma",sans-seri
 <div class="totalBox"><div class="label">المدفوع</div><div class="value">${money(deposit)} ج.م</div></div>
 </div><div class="cod"><div class="label">المبلغ المطلوب تحصيله (COD)</div><div class="value">${money(cod)} ج.م</div></div></section>
 <section class="section"><div class="sectionTitle">📝 ملاحظات الطلب</div><div class="box"><div class="value">${esc(notes)}</div></div></section>
-<footer class="foot">CLIXY • Shop Smarter</footer>
+<section class="section actionSection"><a class="invoiceBtn" href="/api/label?order=${encodeURIComponent(orderNo)}">🧾 فتح الفاتورة</a></section><footer class="foot">CLIXY • Shop Smarter</footer>
 </div></div></body></html>`);
   } catch (e) {
     console.error("products page", e);

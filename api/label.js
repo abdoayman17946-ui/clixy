@@ -145,6 +145,7 @@ body{font-family:Arial,"Tahoma",sans-serif;background:#eee;color:#111}
 <script>
 const ORDER_KEY="clixy_label_v2_${esc(orderNo)}";
 const BASE=${initialJson};
+let SERVER_OVERRIDE = {};
 const $ = id => document.getElementById(id);
 const els = {
   modal: $("modal"),
@@ -157,8 +158,11 @@ const els = {
   depositText: $("depositText"), paymentLabel: $("paymentLabel"), productQr: $("productQr"), productDescription: $("productDescription")
 };
 function getData(){
-  try { return {...BASE, ...(JSON.parse(localStorage.getItem(ORDER_KEY)||"{}"))}; }
-  catch(e){ return {...BASE}; }
+  try { return {...BASE, ...SERVER_OVERRIDE, ...(JSON.parse(localStorage.getItem(ORDER_KEY)||"{}"))}; }
+  catch(e){ return {...BASE, ...SERVER_OVERRIDE}; }
+}
+async function loadServerOverride(){
+  try{ const r=await fetch("/api/order-overrides?order="+encodeURIComponent("${esc(orderNo)}"),{cache:"no-store"}); const d=await r.json(); SERVER_OVERRIDE=d.override||{}; render(); }catch(e){}
 }
 function financialBase(d){
   const sourceTotal=Number(d.total??d.total_cost??0)||0;
@@ -249,6 +253,8 @@ function saveEdit(){
     d.product_description=els.eProductDescription.value.trim();
     // لا نحذف أو نعدل items هنا؛ الـQR يجب أن يظل مبنيًا على المنتجات الأصلية.
     localStorage.setItem(ORDER_KEY,JSON.stringify(d));
+    SERVER_OVERRIDE={...SERVER_OVERRIDE,...d};
+    fetch("/api/order-overrides?order="+encodeURIComponent("${esc(orderNo)}"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)}).catch(()=>{});
     render();
     closeEdit();
   }catch(e){

@@ -38,7 +38,7 @@ async function loadIds(ids){
      const r=await fetch("/api/easyorders?orders="+encodeURIComponent(batch.join(",")));
      const data=await r.json();
      const arr=data.results||[data];
-     for(const x of arr){if(x.ok&&x.data){const o=x.data;const id=String(o.short_id||x.order);state.orders.set(id,o);state.selected.add(id)}else toast("تعذر تحميل الطلب #"+(x.order||""))}
+     for(const x of arr){if(x.ok&&x.data){let o=x.data;const id=String(o.short_id||x.order);try{const ov=await fetch("/api/order-overrides?order="+encodeURIComponent(id),{cache:"no-store"});const od=await ov.json();if(od.override)o={...o,...od.override,items:Array.isArray(od.override.items)?od.override.items:o.items};}catch(e){} state.orders.set(id,o);state.selected.add(id)}else toast("تعذر تحميل الطلب #"+(x.order||""))}
    }
    persistIds();renderList();
  }catch(e){toast("حصل خطأ أثناء تحميل الطلبات")}finally{state.loading=false;document.body.classList.remove("loading")}
@@ -100,7 +100,7 @@ function saveDashboardEdit(){
  const subtotal=baseFinancial.subtotal;
  const shipping=Math.max(0,Number(editEls.shipping.value)||0); const coupon=Math.max(0,Number(editEls.coupon.value)||0); const total=Math.max(0,subtotal+shipping-coupon); const deposit=Math.max(0,Number(editEls.deposit.value)||0);
  const override={...base,deposit,shipping,coupon_discount:coupon,total,cod:Math.max(0,total-deposit),codManual:false,full_name:editEls.name.value.trim(),phone2:editEls.phone2.value.trim(),address:editEls.address.value.trim(),location:editEls.location.value.trim(),notes:editEls.notes.value.trim(),product_description:editEls.description.value.trim(),items};
- localStorage.setItem(keyFor(editingId),JSON.stringify(override)); state.orders.set(editingId,{...state.orders.get(editingId),...override,items}); renderList(); closeDashboardEdit(); singlePreview(editingId); toast("تم حفظ التعديلات");
+ localStorage.setItem(keyFor(editingId),JSON.stringify(override)); state.orders.set(editingId,{...state.orders.get(editingId),...override,items}); renderList(); closeDashboardEdit(); singlePreview(editingId); fetch("/api/order-overrides?order="+encodeURIComponent(editingId),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(override)}).catch(()=>toast("تم الحفظ محليًا، وتعذر مزامنة السيرفر")); toast("تم حفظ التعديلات");
 }
 editEls.deposit.addEventListener("input",updateDashboardTotals);
 editEls.shipping.addEventListener("input",updateDashboardTotals);
