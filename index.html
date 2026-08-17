@@ -343,6 +343,7 @@ async function previewSelected(autoPrint=false){
      fresh.push(merged);
    }
    area.innerHTML=fresh.map(o=>{try{return renderLabel(o)}catch(err){console.error("renderLabel",err,o);return '<div style="padding:25px;text-align:center;color:#b00020">تعذر تجهيز البوليصة #'+esc(o.short_id||o.id||o.order||"")+'. أعد المحاولة.</div>';}}).join("");
+   await hydrateProductQRs(area);
    if(autoPrint){await waitForPrintReady(area);requestAnimationFrame(()=>setTimeout(()=>window.print(),200));}
  }catch(err){
    console.error("previewSelected",err);
@@ -357,7 +358,7 @@ function renderLabel(o){
  <div class="ph"><div><img src="/assets/clixy-logo.png"></div><div class="pc"><div class="small">رقم البوليصة</div><div class="on"><span style="font-size:15px">#</span>${esc(id)}</div></div><div class="qrbox"><img src="/assets/clixy-qr.png"></div></div>
  <div class="bc">${barcodeSvg(barcode)}<div class="bcText">${esc(barcode)}</div></div>
  <div class="inf"><div><div class="k">اسم العميل</div><div class="v">${esc(customerOf(o))}</div><div class="k" style="margin-top:1.7mm">رقم الهاتف الأساسي</div><div class="ltr">${esc(o.phone||"-")}</div><div class="k" style="margin-top:1.7mm">رقم إضافي (اختياري)</div><div class="ltr">${esc(phone2||"-")}</div></div><div><div class="k">العنوان</div><div class="v">${esc(address)}</div><div class="locationBox"><div class="k">اللوكيشن</div>${o.location?`<img class="locationQr" src="${locationQrUrl(o.location)}" alt="Location QR">`:``}</div></div><div><div class="k">ملاحظات</div><div class="v">${esc(o.notes||"-")}</div></div></div>
- <div class="productsArea productQrArea"><div class="pt">المنتجات</div><div class="productQrRow"><div class="productQrWrap"><div class="qrCaption">رؤية المنتجات</div><img class="productQr" src="${productQrUrl(items)}" alt="QR المنتجات"></div><div class="productDescription"><div class="k">وصف المنتج</div><div class="v">${esc(o.product_description||"-")}</div></div></div></div>
+ <div class="productsArea productQrArea"><div class="pt">المنتجات</div><div class="productQrRow"><div class="productQrWrap"><div class="qrCaption">رؤية المنتجات</div><img class="productQr" src="${productQrUrl(items)}" data-product-items="${esc(JSON.stringify(items))}" alt="QR المنتجات"></div><div class="productDescription"><div class="k">وصف المنتج</div><div class="v">${esc(o.product_description||"-")}</div></div></div></div>
  <div class="mg"><div class="mb"><div class="k">إجمالي المنتجات</div><div class="n">${subtotal.toFixed(2)} ج.م</div></div><div class="mb"><div class="k">الشحن</div><div class="n">${shipping.toFixed(2)} ج.م</div></div><div class="mb"><div class="k">كوبون الخصم</div><div class="n">${coupon>0?"- "+coupon.toFixed(2):"0.00"} ج.م</div></div><div class="mb"><div class="k">إجمالي الطلب</div><div class="n">${total.toFixed(2)} ج.م</div></div></div>
  <div class="cod"><div class="cl">${dep>=total&&total>0?"مدفوع بالكامل":"المبلغ المطلوب تحصيله (COD)"}</div><div class="cv">${cod.toFixed(2)} ج.م</div><div class="dep">${dep>0?"تم دفع مقدم: "+dep.toFixed(2)+" ج.م":"بدون دفعة مقدمة"}</div></div>
  <div class="ft"><div class="fb"><div class="k">ملاحظات الطلب</div><div class="v">شكراً لشرائك من CLIXY ❤️</div></div><div class="fb"><div class="k">خدمة العملاء</div><div class="v">01033674242</div></div></div>
@@ -365,11 +366,21 @@ function renderLabel(o){
 }
 function locationQrUrl(value){return "https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=6&data="+encodeURIComponent(String(value||""));}
 function productQrUrl(items){
- const text=(items||[]).map(x=>{
-   const v=x.variant?` | ${x.variant}`:"";
-   return `${x.name||"منتج"}${v} | الكمية: ${Number(x.quantity||1)}`;
- }).join("\n") || "لا توجد منتجات";
- return "https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=6&ecc=M&data="+encodeURIComponent(text);
+ return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"><rect width="1" height="1" fill="white"/></svg>`);
+}
+async function hydrateProductQRs(root){
+ const imgs=[...root.querySelectorAll("img.productQr[data-product-items]")];
+ await Promise.all(imgs.map(async img=>{
+   try{
+     const items=JSON.parse(img.getAttribute("data-product-items")||"[]");
+     const r=await fetch("/api/product-qr",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({items})});
+     const data=await r.json();
+     if(!r.ok||!data.dataUrl) throw new Error(data.error||"QR generation failed");
+     img.src=data.dataUrl;
+   }catch(e){
+     console.error("product QR",e);
+   }
+ }));
 }
 function barcodeSvg(text){
  const p=["212222","222122","222221","121223","121322","131222","122213","122312","132212","221213","221312","231212","112232","122132","122231","113222","123122","123221","223211","221132","221231","213212","223112","312131","311222","321122","321221","312212","322112","322211","212123","212321","232121","111323","131123","131321","112313","132113","132311","211313","231113","231311","112133","112331","132131","113123","113321","133121","313121","211331","231131","213113","223112","213131","311123","311321","331121","312113","312311","332111","314111","221411","431111","111224","111422","121124","121421","141122","141221","112214","112412","122114","122411","142112","142211","241211","221114","413111","241112","134111","111242","121142","121241","114212","124112","124211","411212","421112","421211","212141","214121","412121","111143","111341","131141","114113","114311","411113","411311","113141","114131","311141","411131","211412","211214","211232","2331112"];const s=String(text).replace(/[^\x20-\x7E]/g,"");const v=[104];for(let i=0;i<s.length;i++)v.push(s.charCodeAt(i)-32);let c=104;for(let i=1;i<v.length;i++)c+=v[i]*i;v.push(c%103,106);let x=10,r="";for(const n of v){let black=true;for(const ch of p[n]){const w=+ch;if(black)r+=`<rect x="${x}" y="0" width="${w}" height="62"/>`;x+=w;black=!black}}return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${x+10} 62"><rect width="100%" height="100%" fill="#fff"/>${r}</svg>`;

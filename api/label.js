@@ -67,6 +67,17 @@ export default async function handler(req, res) {
     const orderNo = String(o.short_id || id);
     const barcodeValue = `CLX-${new Date().getFullYear()}-${orderNo.padStart(6, "0")}`;
     const qr = await QRCode.toDataURL(FIXED_QR_URL, { margin: 1, width: 220 });
+    const productText = items.map(x => {
+      const v = x.variant ? ` | ${x.variant}` : "";
+      return `${x.name || "منتج"}${v} | الكمية: ${Number(x.quantity || 1)}`;
+    }).join("\n") || "لا توجد منتجات";
+    let productQr;
+    try {
+      productQr = await QRCode.toDataURL(productText, { errorCorrectionLevel: "M", margin: 2, width: 600 });
+    } catch (e) {
+      const compact = items.map(x => `${x.name || "منتج"} × ${Number(x.quantity || 1)}`).join("\n") || "لا توجد منتجات";
+      productQr = await QRCode.toDataURL(compact, { errorCorrectionLevel: "L", margin: 2, width: 600 });
+    }
 
     const initial = {
       deposit: 0,
@@ -80,7 +91,8 @@ export default async function handler(req, res) {
       product_description: "",
       shipping,
       total: rawTotal,
-      items
+      items,
+      product_qr: productQr
     };
     const initialJson = JSON.stringify(initial).replace(/</g, "\\u003c");
     const rows = items.map((x, i) => `
@@ -195,12 +207,8 @@ function render(){
   els.depositText.textContent=dep>0?"تم دفع مقدم: "+dep.toFixed(2)+" ج.م":"بدون دفعة مقدمة";
   els.paymentLabel.textContent=dep>=total&&total>0?"مدفوع بالكامل":"المبلغ المطلوب تحصيله (COD)";
 
-  // QR المنتجات = المنتجات فقط، والوصف يبقى نصًا منفصلًا.
-  const productText=items.map(x=>{
-    const v=x.variant?" | "+x.variant:"";
-    return (x.name||"منتج")+v+" | الكمية: "+Number(x.quantity||1);
-  }).join("\n") || "لا توجد منتجات";
-  els.productQr.src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=6&ecc=M&data="+encodeURIComponent(productText);
+  // QR المنتجات يتم توليده محليًا من السيرفر، وليس عبر خدمة QR خارجية متقطعة.
+  if(d.product_qr) els.productQr.src=d.product_qr;
   els.productDescription.textContent=d.product_description||"";
 }
 function openEdit(){
