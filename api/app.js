@@ -38,7 +38,7 @@ async function loadIds(ids){
      const r=await fetch("/api/easyorders?orders="+encodeURIComponent(batch.join(",")));
      const data=await r.json();
      const arr=data.results||[data];
-     for(const x of arr){if(x.ok&&x.data){let o=x.data;const id=String(o.short_id||x.order);try{const ov=await fetch("/api/order-overrides?order="+encodeURIComponent(id),{cache:"no-store"});const od=await ov.json();if(od.override)o={...o,...od.override,items:Array.isArray(od.override.items)?od.override.items:o.items};}catch(e){} state.orders.set(id,o);state.selected.add(id)}else toast("تعذر تحميل الطلب #"+(x.order||""))}
+     for(const x of arr){if(x.ok&&x.data){const o=x.data;const id=String(o.short_id||x.order);state.orders.set(id,o);state.selected.add(id)}else toast("تعذر تحميل الطلب #"+(x.order||""))}
    }
    persistIds();renderList();
  }catch(e){toast("حصل خطأ أثناء تحميل الطلبات")}finally{state.loading=false;document.body.classList.remove("loading")}
@@ -100,7 +100,7 @@ function saveDashboardEdit(){
  const subtotal=baseFinancial.subtotal;
  const shipping=Math.max(0,Number(editEls.shipping.value)||0); const coupon=Math.max(0,Number(editEls.coupon.value)||0); const total=Math.max(0,subtotal+shipping-coupon); const deposit=Math.max(0,Number(editEls.deposit.value)||0);
  const override={...base,deposit,shipping,coupon_discount:coupon,total,cod:Math.max(0,total-deposit),codManual:false,full_name:editEls.name.value.trim(),phone2:editEls.phone2.value.trim(),address:editEls.address.value.trim(),location:editEls.location.value.trim(),notes:editEls.notes.value.trim(),product_description:editEls.description.value.trim(),items};
- localStorage.setItem(keyFor(editingId),JSON.stringify(override)); state.orders.set(editingId,{...state.orders.get(editingId),...override,items}); renderList(); closeDashboardEdit(); singlePreview(editingId); fetch("/api/order-overrides?order="+encodeURIComponent(editingId),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(override)}).catch(()=>toast("تم الحفظ محليًا، وتعذر مزامنة السيرفر")); toast("تم حفظ التعديلات");
+ localStorage.setItem(keyFor(editingId),JSON.stringify(override)); state.orders.set(editingId,{...state.orders.get(editingId),...override,items}); renderList(); closeDashboardEdit(); singlePreview(editingId); toast("تم حفظ التعديلات");
 }
 editEls.deposit.addEventListener("input",updateDashboardTotals);
 editEls.shipping.addEventListener("input",updateDashboardTotals);
@@ -139,7 +139,7 @@ function productQrUrl(items){
    const v=x.variant?` | ${x.variant}`:"";
    return `${x.name||"منتج"}${v} | الكمية: ${Number(x.quantity||1)}`;
  }).join("\n") || "لا توجد منتجات";
- return "https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=6&ecc=M&data="+encodeURIComponent(text);
+ return "https://api.qrserver.com/v1/create-qr-code/?size=120x120&margin=3&data="+encodeURIComponent(text);
 }
 function barcodeSvg(text){
  const p=["212222","222122","222221","121223","121322","131222","122213","122312","132212","221213","221312","231212","112232","122132","122231","113222","123122","123221","223211","221132","221231","213212","223112","312131","311222","321122","321221","312212","322112","322211","212123","212321","232121","111323","131123","131321","112313","132113","132311","211313","231113","231311","112133","112331","132131","113123","113321","133121","313121","211331","231131","213113","223112","213131","311123","311321","331121","312113","312311","332111","314111","221411","431111","111224","111422","121124","121421","141122","141221","112214","112412","122114","122411","142112","142211","241211","221114","413111","241112","134111","111242","121142","121241","114212","124112","124211","411212","421112","421211","212141","214121","412121","111143","111341","131141","114113","114311","411113","411311","113141","114131","311141","411131","211412","211214","211232","2331112"];const s=String(text).replace(/[^\x20-\x7E]/g,"");const v=[104];for(let i=0;i<s.length;i++)v.push(s.charCodeAt(i)-32);let c=104;for(let i=1;i<v.length;i++)c+=v[i]*i;v.push(c%103,106);let x=10,r="";for(const n of v){let black=true;for(const ch of p[n]){const w=+ch;if(black)r+=`<rect x="${x}" y="0" width="${w}" height="62"/>`;x+=w;black=!black}}return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${x+10} 62"><rect width="100%" height="100%" fill="#fff"/>${r}</svg>`;
