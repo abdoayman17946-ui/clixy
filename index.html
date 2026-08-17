@@ -100,7 +100,8 @@
     <div class="editCard calculated codCard"><label>المبلغ المطلوب تحصيله (COD)</label><input id="dCod" type="number" min="0" step=".01" readonly><small>الإجمالي − الديبوزيت</small></div>
   </div></div>
   <div class="editSection"><div class="sectionTitle">👤 بيانات العميل</div><div class="row">
-    <div class="editCard calculated"><label>اسم العميل</label><input id="dName" readonly><small>يتغير من داخل تعديل البوليصة فقط</small></div>
+    <div class="editCard"><label>اسم العميل</label><input id="dName"><small>يمكن تعديل الاسم من هنا وسيظهر في الداشبورد والبوليصة</small></div>
+    <div class="editCard"><label>رقم الهاتف الأساسي</label><input id="dPhone"></div>
     <div class="editCard"><label>رقم إضافي</label><input id="dPhone2"></div>
   </div>
   <div class="editCard full"><label>العنوان</label><textarea id="dAddress" rows="2"></textarea></div>
@@ -214,7 +215,7 @@ async function loadSaved(){
 function persistIds(){localStorage.setItem(STORAGE_ORDERS,JSON.stringify([...state.orders.keys()].slice(0,200)))}
 let editingId=null;
 const editEls={
- modal:document.getElementById("editModal"),title:document.getElementById("editTitle"),deposit:document.getElementById("dDeposit"),shipping:document.getElementById("dShipping"),coupon:document.getElementById("dCoupon"),total:document.getElementById("dTotal"),cod:document.getElementById("dCod"),name:document.getElementById("dName"),phone2:document.getElementById("dPhone2"),address:document.getElementById("dAddress"),location:document.getElementById("dLocation"),notes:document.getElementById("dNotes"),description:document.getElementById("dProductDescription")
+ modal:document.getElementById("editModal"),title:document.getElementById("editTitle"),deposit:document.getElementById("dDeposit"),shipping:document.getElementById("dShipping"),coupon:document.getElementById("dCoupon"),total:document.getElementById("dTotal"),cod:document.getElementById("dCod"),name:document.getElementById("dName"),phone:document.getElementById("dPhone"),phone2:document.getElementById("dPhone2"),address:document.getElementById("dAddress"),location:document.getElementById("dLocation"),notes:document.getElementById("dNotes"),description:document.getElementById("dProductDescription")
 };
 function dashboardEditData(id){const raw=state.orders.get(String(id))||{};return mergeOrder(raw);}
 function discountOf(o){
@@ -250,7 +251,7 @@ function openDashboardEdit(id){
  editEls.shipping.value=Number(d.shipping??d.shipping_cost??0);
  editEls.coupon.value=Number(d.coupon_discount??d.coupon_amount??d.discount_amount??d.discount??d.coupon_value??discountOf(d)??0)||0;
  editEls.total.value=(base.subtotal+Number(editEls.shipping.value||0)-Number(editEls.coupon.value||0)).toFixed(2);
- editEls.name.value=d.full_name||d.name||""; editEls.phone2.value=d.phone2||""; editEls.address.value=d.address||""; editEls.location.value=d.location||""; editEls.notes.value=d.notes||""; editEls.description.value=d.product_description||"";
+ editEls.name.value=d.full_name||d.name||""; editEls.phone.value=d.phone||d.phone_number||""; editEls.phone2.value=d.phone2||""; editEls.address.value=d.address||""; editEls.location.value=d.location||""; editEls.notes.value=d.notes||""; editEls.description.value=d.product_description||"";
  updateDashboardTotals();
  editEls.modal.classList.add("open");
 }
@@ -260,7 +261,7 @@ function saveDashboardEdit(){
  const base=dashboardEditData(editingId); const baseFinancial=financialBase(base); const items=Array.isArray(base.items)&&base.items.length?base.items:(Array.isArray(base.cart_items)?base.cart_items:[]);
  const subtotal=baseFinancial.subtotal;
  const shipping=Math.max(0,Number(editEls.shipping.value)||0); const coupon=Math.max(0,Number(editEls.coupon.value)||0); const total=Math.max(0,subtotal+shipping-coupon); const deposit=Math.max(0,Number(editEls.deposit.value)||0);
- const override={...base,deposit,shipping,coupon_discount:coupon,total,cod:Math.max(0,total-deposit),codManual:false,full_name:base.full_name||base.name||editEls.name.value.trim(),phone2:editEls.phone2.value.trim(),address:editEls.address.value.trim(),location:editEls.location.value.trim(),notes:editEls.notes.value.trim(),product_description:editEls.description.value.trim(),items};
+ const override={...base,deposit,shipping,coupon_discount:coupon,total,cod:Math.max(0,total-deposit),codManual:false,full_name:editEls.name.value.trim(),name:editEls.name.value.trim(),phone:editEls.phone.value.trim(),phone_number:editEls.phone.value.trim(),phone2:editEls.phone2.value.trim(),address:editEls.address.value.trim(),location:editEls.location.value.trim(),notes:editEls.notes.value.trim(),product_description:editEls.description.value.trim(),items};
  localStorage.setItem(keyFor(editingId),JSON.stringify(override)); state.orders.set(editingId,{...state.orders.get(editingId),...override,items}); renderList(); closeDashboardEdit(); singlePreview(editingId); toast("تم حفظ التعديلات");
 }
 editEls.deposit.addEventListener("input",updateDashboardTotals);
